@@ -107,7 +107,8 @@ body {
 footer li {
     display: inline-block;
     text-align: center;
-    margin: 0px 0px 0px 0px ;
+    margin: 0 ;
+    padding: 0px 5px 0px 0px;
 }
 
 footer ul {
@@ -117,7 +118,6 @@ footer ul {
 footer i {
     /*margin: 0;*/
     font-size: 40px;
-    margin: 0px 2px 0px 0px;
 }
 
 footer .row {
