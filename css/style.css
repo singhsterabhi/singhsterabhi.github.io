@@ -58,14 +58,14 @@ body {
     }
 
     #abhi {
-        font-size: 70px;
+        font-size: 85px;
         /*background: red;*/
-        width: 100%;
+        width: 80%;
     }
 
     .header {
-        padding-top: 20px;
-        padding-left: 30px;
+        padding-top: 50px;
+        padding-left: 50px;
     }
 
     .header h3 {
@@ -73,16 +73,22 @@ body {
         padding-left: 12px;
         font-family: "Microsoft JhengHei Light", sans-serif;
     }
+    footer li{
+        margin: 0 5% 0 5%;
+    }
 }
 
 @media screen and (min-width: 710px) {
+    footer li{
+        margin: 0 10% 0 10%;
+    }
     body {
         background: url('../img/back-min.png') no-repeat fixed top right;
     }
 
     #abhi {
         font-size: 120px;
-        width: 100%;
+        width: 90%;
     }
 
     .header {
@@ -105,13 +111,13 @@ body {
 }
 
 footer li {
-    display: inline-block;
-    text-align: center;
-    margin: 0 ;
+    display:inline; list-style-type:none;
+    margin: 0;
 }
 
 footer ul {
-    margin: 0;
+    display: flex;
+    justify-content: space-between;
 }
 
 footer i {
