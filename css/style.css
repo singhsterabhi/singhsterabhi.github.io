@@ -26,7 +26,7 @@ body {
     white-space: nowrap;
     overflow: hidden;
     /*background: red;*/
-    animation: type 4s steps(50, end) infinite;
+    animation: type 4s steps(100, end) 1;
     width: 400px;
 
 }
