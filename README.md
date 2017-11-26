@@ -1,1 +1,1 @@
-# https://singhsterabhi.github.io/
+# https://singhsterabhi.tech/
