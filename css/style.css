@@ -5,6 +5,9 @@
     font-family: "Lucida Console", Monaco, monospace !important;
 }
 
+/* body */
+
+
 /* The sidebar menu */
 
 .sidebar {
@@ -20,7 +23,7 @@
     /* Stay at the top */
     left: 0;
     /* background-image: linear-gradient(to right, #ff0844 0%, #110c2a 100%); */
-    background: salmon;
+    background: #FF004C;
     overflow-x: hidden;
     /* Disable horizontal scroll */
     padding-top: 20px;
@@ -42,8 +45,8 @@
     color: #f1f1f1;
 }
 
-.list-group-item{
-    background-color: transparent!important;
+.list-group-item {
+    background-color: transparent !important;
     border: transparent;
 }
 
@@ -70,28 +73,176 @@
 
 #home {
     /* background: springgreen; */
-    background: url("../images/homebackdark-min.jpg") center no-repeat;
-    background-size: cover;
+    background: linear-gradient( rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url(../images/homebackdark-min.jpg) center no-repeat;
+    background-size: cover, cover;
     height: 100vh;
     padding: 0;
     margin: 0;
+    position: relative;
 }
 
-#title{
+#title {
     text-align: right;
     position: absolute;
     right: 10%;
     bottom: 40%;
     color: snow;
-    border-right:1px solid coral;
-    padding-right: 30px; 
+    border-right: 1px solid coral;
+    padding-right: 30px;
+    animation-name: title;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-timing-function: ease-in-out;
+    z-index: 2;
 }
 
+@keyframes title {
+    from {
+        transform: translate(0, 8px);
+    }
+    to {
+        transform: translate(0, -8px);
+    }
+}
+
+#square1 {
+    width: 100px;
+    height: 100px;
+    background: rgba(0, 0, 0, 0);
+    border: rgba(28, 25, 46, 0.45) 4px solid;
+    position: absolute;
+    right: 10%;
+    bottom: 40%;
+    animation-name: square1;
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-timing-function: ease-in-out;
+    z-index: 1;
+}
+
+@keyframes square1 {
+    from {
+        transform: rotate(0) scale(1.5);
+    }
+    to {
+        transform: rotate(360deg) scale(.2);
+    }
+}
+
+#square2 {
+    width: 100px;
+    height: 100px;
+    background: rgba(0, 0, 0, 0);
+    border: rgba(41, 14, 66, 0.548) 4px solid;
+    position: absolute;
+    right: 20%;
+    bottom: 70%;
+    animation-name: square2;
+    animation-duration: 8s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-timing-function: ease-in-out;
+    z-index: 1;
+}
+
+@keyframes square2 {
+    from {
+        transform: translate(10px, 0) rotate(0) scale(1.5);
+    }
+    to {
+        transform: translate(-10px, 0) rotate(-360deg) scale(.2);
+    }
+}
+
+#square3 {
+    width: 100px;
+    height: 100px;
+    background: rgba(0, 0, 0, 0);
+    border: rgba(28, 25, 46, 0.45) 4px solid;
+    position: absolute;
+    left: 10%;
+    bottom: 40%;
+    animation-name: square3;
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-timing-function: ease-in-out;
+    z-index: 1;
+}
+
+@keyframes square3 {
+    from {
+        transform: translate(10px,10px) rotate(0) scale(1.5);
+    }
+    to {
+        transform: translate(-10px,-10px) rotate(-360deg) scale(.2);
+    }
+}
+
+#circle1 {
+    width: 100px;
+    height: 100px;
+    -moz-border-radius: 50px;
+    -webkit-border-radius: 50px;
+    background: rgba(0, 0, 0, 0);
+    border: rgba(28, 25, 46, 0.45) 4px solid;
+    border-radius: 50px;
+    position: absolute;
+    right: 60%;
+    top: 15%;
+    animation-name: circle1;
+    animation-duration: 8s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-timing-function: ease-in-out;
+    z-index: 1;
+}
+
+@keyframes circle1 {
+    from {
+        transform: translate(80px, 30px);
+    }
+    to {
+        transform: translate(-20px, 0) scale(1.5);
+    }
+}
+
+/* rgb(12, 5, 19) */
+
+#circle2 {
+    width: 100px;
+    height: 100px;
+    -moz-border-radius: 50px;
+    -webkit-border-radius: 50px;
+    background: rgba(0, 0, 0, 0);
+    border: rgba(29, 7, 51, 0.45) 4px solid;
+    border-radius: 50px;
+    position: absolute;
+    right: 30%;
+    bottom: 20%;
+    animation-name: circle2;
+    animation-duration: 5s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-timing-function: ease-in-out;
+    z-index: 1;
+}
+
+@keyframes circle2 {
+    from {
+        transform: translate(30px, 100px);
+    }
+    to {
+        transform: translate(0px, -20px) scale(1.5);
+    }
+}
 
 /* About */
 
 #about {
-    background: springgreen;
+    background: rgb(29, 31, 30);
     height: 100vh;
     padding: 0;
     margin: 0;
