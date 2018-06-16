@@ -1,6 +1,6 @@
 /* page */
 
-body{}
+body {}
 
 #total {
     padding: 0;
@@ -74,7 +74,7 @@ body{}
 
 #home {
     /* background: springgreen; */
-    background: linear-gradient( rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url(../images/homebackdark-min.jpg) center no-repeat;
+    /* background: linear-gradient( rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url(../images/homebackdark-min.jpg) center no-repeat; */
     background-size: cover, cover;
     height: 100vh;
     padding: 0;
@@ -112,7 +112,7 @@ body{}
     width: 100px;
     height: 100px;
     background: rgba(0, 0, 0, 0);
-    border: rgba(28, 25, 46, 0.45) 4px solid;
+    border: rgba(28, 25, 46, 0.45) 2px solid;
     position: absolute;
     right: 10%;
     bottom: 40%;
@@ -137,7 +137,7 @@ body{}
     width: 100px;
     height: 100px;
     background: rgba(0, 0, 0, 0);
-    border: rgba(28, 25, 46, 0.45) 4px solid;
+    border: rgba(28, 25, 46, 0.45) 2px solid;
     position: absolute;
     right: 20%;
     bottom: 70%;
@@ -162,7 +162,7 @@ body{}
     width: 100px;
     height: 100px;
     background: rgba(0, 0, 0, 0);
-    border: rgba(28, 25, 46, 0.45) 4px solid;
+    border: rgba(28, 25, 46, 0.45) 2px solid;
     position: absolute;
     left: 10%;
     bottom: 40%;
@@ -176,10 +176,10 @@ body{}
 
 @keyframes square3 {
     from {
-        transform: translate(10px,10px) rotate(0) scale(1.5);
+        transform: translate(10px, 10px) rotate(0) scale(1.5);
     }
     to {
-        transform: translate(-10px,-10px) rotate(-360deg) scale(.2);
+        transform: translate(-10px, -10px) rotate(-360deg) scale(.2);
     }
 }
 
@@ -190,7 +190,7 @@ body{}
     -moz-border-radius: 50px;
     -webkit-border-radius: 50px;
     background: rgba(0, 0, 0, 0);
-    border: rgba(28, 25, 46, 0.45) 4px solid;
+    border: rgba(28, 25, 46, 0.45) 2px solid;
     border-radius: 50px;
     position: absolute;
     right: 60%;
@@ -220,7 +220,7 @@ body{}
     -moz-border-radius: 50px;
     -webkit-border-radius: 50px;
     background: rgba(0, 0, 0, 0);
-    border: rgba(28, 25, 46, 0.45) 4px solid;
+    border: rgba(28, 25, 46, 0.45) 2px solid;
     border-radius: 50px;
     position: absolute;
     right: 30%;
@@ -244,10 +244,64 @@ body{}
 
 /* foot */
 
-#foot{
+#foot {
     position: absolute;
     bottom: 0;
-    background: rgba(28, 25, 46, 0.281);
     width: 100%;
     min-height: 20px;
 }
+
+#links {
+    font-size: 25px;
+    /* width: 70%; */
+    display: flex;
+    background: rgba(20, 18, 32, 0.527);
+    justify-content: space-around;
+    padding: 10px 50px;
+}
+
+#links a {
+    color: rgb(12, 109, 184);
+}
+
+#links a:hover{
+    color: #dd980f;
+}
+
+#foot p{
+    color: #dd980f;
+    font-size: 20px;
+}
+
+
+/* // Extra small devices (portrait phones, less than 576px) */
+@media (max-width: 575.98px) { 
+    #title{
+        width: 80%;
+        bottom: 35%;
+    }
+    #foot p{
+        font-size: small;
+        padding: 5px;
+    }
+ }
+
+/* // Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) and (max-width: 767.98px) { 
+    #title{
+        width: 50%;
+    }
+    #foot p{
+        font-size: small;
+        padding: 5px;
+    }
+ }
+
+/* // Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) and (max-width: 991.98px) {  }
+
+/* // Large devices (desktops, 992px and up) */
+@media (min-width: 992px) and (max-width: 1199.98px) {  }
+
+/* // Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {  }
