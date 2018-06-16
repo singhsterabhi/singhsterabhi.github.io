@@ -1,12 +1,13 @@
 /* page */
 
+body{}
+
 #total {
     padding: 0;
     font-family: "Lucida Console", Monaco, monospace !important;
 }
 
-/* body */
-
+/* #FF004C */
 
 /* The sidebar menu */
 
@@ -53,7 +54,7 @@
 /* Style page content */
 
 .main {
-    margin-left: 160px;
+    /* margin-left: 160px; */
     /* Same as the width of the sidebar */
     /* padding: 0px 10px; */
 }
@@ -87,7 +88,7 @@
     right: 10%;
     bottom: 40%;
     color: snow;
-    border-right: 1px solid coral;
+    border-right: 1px solid snow;
     padding-right: 30px;
     animation-name: title;
     animation-duration: 3s;
@@ -95,6 +96,7 @@
     animation-direction: alternate;
     animation-timing-function: ease-in-out;
     z-index: 2;
+    width: 25%;
 }
 
 @keyframes title {
@@ -135,7 +137,7 @@
     width: 100px;
     height: 100px;
     background: rgba(0, 0, 0, 0);
-    border: rgba(41, 14, 66, 0.548) 4px solid;
+    border: rgba(28, 25, 46, 0.45) 4px solid;
     position: absolute;
     right: 20%;
     bottom: 70%;
@@ -182,6 +184,7 @@
 }
 
 #circle1 {
+    color: #6d6048;
     width: 100px;
     height: 100px;
     -moz-border-radius: 50px;
@@ -217,7 +220,7 @@
     -moz-border-radius: 50px;
     -webkit-border-radius: 50px;
     background: rgba(0, 0, 0, 0);
-    border: rgba(29, 7, 51, 0.45) 4px solid;
+    border: rgba(28, 25, 46, 0.45) 4px solid;
     border-radius: 50px;
     position: absolute;
     right: 30%;
@@ -239,11 +242,12 @@
     }
 }
 
-/* About */
+/* foot */
 
-#about {
-    background: rgb(29, 31, 30);
-    height: 100vh;
-    padding: 0;
-    margin: 0;
+#foot{
+    position: absolute;
+    bottom: 0;
+    background: rgba(28, 25, 46, 0.281);
+    width: 100%;
+    min-height: 20px;
 }
