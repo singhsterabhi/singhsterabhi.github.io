@@ -22,7 +22,7 @@ canvas {
 
 @media (max-width: 575.98px) { 
     #particles-js{
-        background: linear-gradient( rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url("../images/homeback-min-mobile.jpg") center no-repeat;
+        background: linear-gradient( rgba(0, 0, 0, 0.705), rgba(0, 0, 0, 0.45)), url("../images/homeback-min-mobile.jpg") center no-repeat;
         background-size: cover, cover;
     }
 }

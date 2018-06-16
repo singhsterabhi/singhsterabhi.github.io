@@ -184,7 +184,7 @@ body {}
 }
 
 #circle1 {
-    color: #6d6048;
+    /* color: #150929; */
     width: 100px;
     height: 100px;
     -moz-border-radius: 50px;
@@ -278,7 +278,7 @@ body {}
 @media (max-width: 575.98px) { 
     #title{
         width: 80%;
-        bottom: 35%;
+        bottom: 40%;
     }
     #foot p{
         font-size: small;
