@@ -1,1 +1,1 @@
-# https://singhsterabhi.tech/
+# https://singhsterabhi.me/
