@@ -3,10 +3,10 @@ const pxtorem = require('postcss-pxtorem')
 
 module.exports = {
   siteMetadata: {
-    url: 'https://singhsterabhigithub.io',
+    url: 'https://singhsterabhi.github.io',
     title: 'Blog by singhsterAbhi',
     subtitle:
-      'Abhishek',
+      'A web developer and ML enthusiast',
     copyright: '© All rights reserved.',
     disqusShortname: '',
     menu: [
