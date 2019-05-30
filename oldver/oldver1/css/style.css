@@ -1,0 +1,142 @@
+.header {
+    /*min-height: 700px;*/
+}
+
+p, h3 {
+    margin: 0;
+}
+
+body {
+    background-color: #d9d9d9;
+    background-size: inherit;
+}
+
+#blinker {
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    to {
+        opacity: .0;
+    }
+}
+
+#abhi {
+    font-family: 'Caveat Brush', cursive;
+    white-space: nowrap;
+    overflow: hidden;
+    /*background: red;*/
+    animation: type 4s steps(100, end) 1;
+    width: 400px;
+
+}
+
+#abhi span {
+    font-family: sans-serif;
+    color: #FF5722;
+}
+
+@keyframes type {
+    from {
+        width: 0;
+    }
+}
+
+.brand-logo img {
+    box-shadow: bisque;
+    height: 60px;
+    padding-top: 7px;
+}
+
+.header h3 {
+    color: #FF5722;
+}
+
+@media screen and (min-width: 0px) {
+    body {
+        background: url('../img/backsmall-min.png') no-repeat fixed top right;
+    }
+
+    #abhi {
+        font-size: 72px;
+        /*background: red;*/
+        width: 100%;
+    }
+
+    .header {
+        padding-top: 30px;
+        padding-left: 30px;
+    }
+
+    .header h3 {
+        font-size: 50px;
+        padding-left: 12px;
+        font-family: "Microsoft JhengHei Light", sans-serif;
+    }
+
+    footer li {
+        margin: 0 10% 0 10%;
+    }
+}
+
+@media screen and (min-width: 710px) {
+    footer li {
+        margin: 0 10% 0 10%;
+    }
+
+    body {
+        background: url('../img/back-min.png') no-repeat fixed top right;
+    }
+
+    #abhi {
+        font-size: 120px;
+        width: 100%;
+    }
+
+    .header {
+        padding-top: 68px;
+        padding-left: 150px;
+    }
+
+    .header h3 {
+        font-size: 60px;
+        padding-left: 15px;
+        font-family: "Microsoft JhengHei Light", sans-serif;
+        text-decoration: underline rgba(1, 1, 1, 1);
+    }
+}
+
+@media screen and (max-width: 600px) {
+    nav {
+        height: 64px;
+    }
+}
+
+footer li {
+    display: inline;
+    list-style-type: none;
+    margin: 0;
+}
+
+footer ul {
+    margin: 0 10%;
+    display: flex;
+    justify-content: space-between;
+}
+
+footer i {
+    /*margin: 0;*/
+    font-size: 40px;
+}
+
+footer .row {
+    margin: 0;
+}
+
+footer {
+    position: fixed;
+    left: 0px;
+    bottom: 0px;
+    width: 100%;
+
+}

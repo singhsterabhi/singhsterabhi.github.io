@@ -1,0 +1,28 @@
+/* ---- reset ---- */
+
+body {
+    margin: 0;
+    font: normal 75% Arial, Helvetica, sans-serif;
+}
+
+canvas {
+    display: block;
+    vertical-align: bottom;
+}
+
+/* ---- particles.js container ---- */
+
+#particles-js {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient( rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url("../images/homeback-min.jpg") center no-repeat;
+    background-size: cover, cover;
+}
+
+@media (max-width: 575.98px) { 
+    #particles-js{
+        background: linear-gradient( rgba(0, 0, 0, 0.705), rgba(0, 0, 0, 0.45)), url("../images/homeback-min-mobile.jpg") center no-repeat;
+        background-size: cover, cover;
+    }
+}
