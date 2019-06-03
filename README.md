@@ -1,7 +1,7 @@
 ## Hi I am Abhishek.
 
 I am a web developer and ML enthusiast.
-This is my personal blog and here I post about everything but mostly tech.
+This is my personal blog and here I post about everything but mostly tech. (Under development)
 
 Follow this [link](https://singhsterabhi.github.io) for the blog. (Still under development)
 
