@@ -4,7 +4,7 @@ const pxtorem = require('postcss-pxtorem')
 module.exports = {
   siteMetadata: {
     url: 'https://singhsterabhi.github.io',
-    title: 'Blog by singhsterAbhi',
+    title: 'Abhishek',
     subtitle:
       'A web developer and ML enthusiast',
     copyright: '© All rights reserved.',
@@ -22,6 +22,10 @@ module.exports = {
         label: 'Contact me',
         path: '/contact/',
       },
+      {
+        label:'Categories',
+        path:'/categories/'
+      }
     ],
     author: {
       name: 'Abhishek',
