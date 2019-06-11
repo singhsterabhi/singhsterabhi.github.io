@@ -2,6 +2,7 @@ backend:
   name: github
   repo: singhsterabhi/singhsterabhi.github.io 
   branch: gh-pages
+  site_domain: netauth.netlify.com
 
 media_folder: "static/media"
 public_folder: "/media"
@@ -11,7 +12,7 @@ collections:
     label: "Articles"
     folder: "src/pages/articles"
     create: true
-    slug: "{{year}}-{{month}}-{{day}}-{{slug}}/index.md"
+    slug: "{{year}}-{{month}}-{{day}}---{{slug}}/index.md"
     fields:
       - {label: "Template", name: "template", widget: "hidden", default: "post"}
       - {label: "Title", name: "title", widget: "string"}
