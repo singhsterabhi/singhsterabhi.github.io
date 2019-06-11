@@ -5,8 +5,7 @@ module.exports = {
   siteMetadata: {
     url: 'https://singhsterabhi.github.io',
     title: 'Abhishek',
-    subtitle:
-      'A web developer and ML enthusiast',
+    subtitle: 'A web developer and ML enthusiast',
     copyright: '© All rights reserved.',
     disqusShortname: '',
     menu: [
@@ -23,15 +22,17 @@ module.exports = {
         path: '/contact/',
       },
       {
-        label:'Categories',
-        path:'/categories/'
-      }
+        label: 'Categories',
+        path: '/categories/',
+      },
     ],
     author: {
       name: 'Abhishek',
       email: 'singhsterabhi@gmail.com',
       twitter: 'singhsterabhi',
       github: 'singhsterabhi',
+      instagram: 'singhsterabhi',
+      facebook: 'singhsterabhi',
     },
   },
   plugins: [
@@ -202,6 +203,6 @@ module.exports = {
         precision: 8,
       },
     },
-    `gatsby-plugin-netlify-cms`,
+    'gatsby-plugin-netlify-cms',
   ],
 }

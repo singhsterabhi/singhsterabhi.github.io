@@ -9,6 +9,8 @@ class Links extends React.Component {
       twitter: author.twitter,
       github: author.github,
       email: author.email,
+      instagram: author.instagram,
+      facebook: author.facebook,
     }
 
     return (
@@ -35,6 +37,16 @@ class Links extends React.Component {
           <li className="links__list-item">
             <a href={`mailto:${links.email}`}>
               <i className="icon-mail" />
+            </a>
+          </li>
+          <li className="links__list-item">
+            <a href={`https://www.instagram.com/${links.instagram}`}>
+              <i className="icon-instagram" />
+            </a>
+          </li>
+          <li className="links__list-item">
+            <a href={`https://www.facebook.com/${links.facebook}`}>
+              <i className="icon-facebook" />
             </a>
           </li>
         </ul>
