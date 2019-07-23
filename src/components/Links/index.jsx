@@ -12,7 +12,7 @@ class Links extends React.Component {
       instagram: author.instagram,
       facebook: author.facebook,
     }
-
+    console.log(links)
     return (
       <div className="links">
         <ul className="links__list">
