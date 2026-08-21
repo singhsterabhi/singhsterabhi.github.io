@@ -20,7 +20,7 @@ export default defineConfig({
       provider: fontProviders.google(),
       name: 'JetBrains Mono',
       cssVariable: '--font-mono',
-      weights: ['400', '500'],
+      weights: ['400', '500', '700'],
       subsets: ['latin'],
       fallbacks: ['ui-monospace', 'monospace'],
     },

@@ -105,7 +105,7 @@ cool, so every warm or saturated note on the page comes from the accents.
 --color-neutral-300: oklch(0.375 0.016 258)
 --color-neutral-400: oklch(0.455 0.014 256)
 --color-neutral-500: oklch(0.520 0.013 254)
---color-neutral-600: oklch(0.560 0.012 252)
+--color-neutral-600: oklch(0.545 0.012 252)
 --color-neutral-700: oklch(0.700 0.010 250)
 --color-neutral-800: oklch(0.855 0.008 250)
 --color-neutral-900: oklch(0.930 0.006 250)
@@ -151,6 +151,23 @@ Task 3's test suite asserts these. Every pairing below is intended to pass WCAG 
 - `accent` on `bg` — borders and focus rings (3:1)
 - `accent-300` on `bg` — accent-coloured text (4.5:1)
 - `accent-2-300` on `bg` — error text (4.5:1)
+
+**Correction applied 2026-08-22 during Task 3.** Light `--color-neutral-600` was
+originally specified as `oklch(0.560 0.012 252)`. Measured against the light
+ground it gave **4.326:1** — below AA for the small uppercase mono labels it
+carries. Darkened to `oklch(0.545 0.012 252)`, which measures **4.606:1**. The
+value above is the corrected one.
+
+Measured ratios, both themes, verified independently:
+
+| Pairing | Light | Dark | Min |
+|---|---|---|---|
+| `text` on `bg` | 16.858 | 16.965 | 4.5 |
+| `neutral-400` on `bg` | 6.771 | 7.900 | 4.5 |
+| `neutral-600` on `bg` | 4.606 | 4.964 | 4.5 |
+| `accent` on `bg` | 5.809 | 11.679 | 3 |
+| `accent-300` on `bg` | 7.221 | 13.112 | 4.5 |
+| `accent-2-300` on `bg` | 7.989 | 9.093 | 4.5 |
 
 If any assertion fails, **change the value here and in `tokens.css`, not the
 assertion.** A failing contrast test means the palette is wrong, which is the
