@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { wcagContrast, parse } from 'culori';
 
-const css = readFileSync('src/styles/tokens.css', 'utf8');
+const css = readFileSync('src/styles/tokens.css', 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
 
 function block(selector: string): Record<string, string> {
   const i = css.indexOf(selector);
@@ -62,6 +62,21 @@ describe('design tokens', () => {
       const c = wcagContrast(parse(theme['--color-accent'])!, parse(theme['--color-bg'])!);
       expect(c, `${name} accent contrast ${c}`).toBeGreaterThanOrEqual(3);
     }
+  });
+
+  it('meets WCAG AA for accent-2 error text in both themes', () => {
+    for (const [name, theme] of [['light', light], ['dark', dark]] as const) {
+      const c = wcagContrast(parse(theme['--color-accent-2-300'])!, parse(theme['--color-bg'])!);
+      expect(c, `${name} accent-2-300 contrast ${c}`).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
+  it('keeps the two dark blocks in lockstep — editing one without the other is a silent bug', () => {
+    const media = block(':root:not([data-theme="light"])');
+    for (const t of Object.keys(dark)) {
+      expect(media[t], `${t} differs between [data-theme="dark"] and the media query`).toBe(dark[t]);
+    }
+    expect(Object.keys(media).sort()).toEqual(Object.keys(dark).sort());
   });
 
   it('defines the motion contract exactly once, with the spec values', () => {

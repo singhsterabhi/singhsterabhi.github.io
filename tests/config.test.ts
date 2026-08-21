@@ -22,6 +22,6 @@ describe('astro config', () => {
 
   it('self-hosts every font — no runtime Google Fonts request', () => {
     expect(config.fonts?.length).toBeGreaterThan(0);
-    for (const f of config.fonts) expect(f.cssVariable).toMatch(/^--font-/);
+    for (const f of config.fonts!) expect(f.cssVariable).toMatch(/^--font-/);
   });
 });

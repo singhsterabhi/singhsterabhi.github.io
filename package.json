@@ -25,6 +25,7 @@
     "tailwindcss": "4.3.3"
   },
   "devDependencies": {
+    "@types/culori": "4.0.1",
     "@types/react": "19.2.18",
     "culori": "4.0.2",
     "jsdom": "^30.0.1",
