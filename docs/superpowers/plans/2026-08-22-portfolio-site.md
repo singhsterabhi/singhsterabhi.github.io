@@ -291,6 +291,104 @@ Append to the `fonts` array in `astro.config.mjs`, substituting the chosen famil
 Run: `pnpm build && pnpm vitest run tests/config.test.ts`
 Expected: build succeeds, config tests still pass, three font families now in `dist/_astro/fonts/`.
 
+- [ ] **Step 6: Write the failing test for the rain field**
+
+`tests/dom/rain.test.ts` — the assertions that matter are the guard rails, not the
+visuals. Each of these is a requirement from the decision doc that would
+otherwise be silently dropped.
+
+```ts
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { columnCount, createRain } from '../../src/scripts/rain';
+
+describe('columnCount — mobile budget (decision doc, non-negotiable 4)', () => {
+  it('scales with viewport width', () => {
+    expect(columnCount(1440)).toBeGreaterThan(columnCount(375));
+  });
+  it('stays modest on a phone', () => {
+    expect(columnCount(375)).toBeLessThanOrEqual(26);
+  });
+  it('never returns zero, so the field is never empty on a narrow screen', () => {
+    expect(columnCount(280)).toBeGreaterThan(0);
+  });
+});
+
+describe('createRain', () => {
+  let cv: HTMLCanvasElement;
+  beforeEach(() => {
+    cv = document.createElement('canvas');
+    Object.defineProperty(cv, 'clientWidth', { value: 800, configurable: true });
+    Object.defineProperty(cv, 'clientHeight', { value: 600, configurable: true });
+  });
+
+  it('draws exactly one frame and never starts a loop under reduced motion', () => {
+    const raf = vi.spyOn(window, 'requestAnimationFrame');
+    const r = createRain(cv, { reducedMotion: true, theme: 'dark' });
+    r.start();
+    expect(raf).not.toHaveBeenCalled();
+    raf.mockRestore();
+  });
+
+  it('exposes a stop() that halts the loop', () => {
+    const r = createRain(cv, { reducedMotion: false, theme: 'dark' });
+    r.start();
+    r.stop();
+    expect(r.running()).toBe(false);
+  });
+
+  it('uses a lower alpha ceiling in the light theme', () => {
+    const dark = createRain(cv, { reducedMotion: false, theme: 'dark' });
+    const light = createRain(cv, { reducedMotion: false, theme: 'light' });
+    expect(light.maxAlpha()).toBeLessThan(dark.maxAlpha());
+  });
+});
+```
+
+- [ ] **Step 7: Run it to make sure it fails**
+
+Run: `pnpm vitest run tests/dom/rain.test.ts`
+Expected: FAIL — cannot resolve `src/scripts/rain`.
+
+- [ ] **Step 8: Implement the rain field**
+
+`src/scripts/rain.ts` exports `columnCount(width: number): number` and
+`createRain(canvas, opts): { start(): void; stop(): void; running(): boolean; maxAlpha(): number }`.
+
+Requirements, all from `docs/superpowers/decisions/2026-08-22-palette-and-type.md`:
+- Glyph set `01<>/{}[]#$_—❯abcdef`, falling in columns at varied speeds, a bright
+  magenta head and a dim cyan tail, over a scanline drift of 1px lines every 4px.
+- Colours read from the **computed CSS custom properties**, never hardcoded — the
+  field must recolour itself when the theme flips.
+- `maxAlpha()` returns 0.16 for dark and 0.08 for light.
+- `columnCount` derives from viewport width; cap at 26 columns at 375px.
+- Cap the device pixel ratio at 2.
+- Re-derive columns on resize, debounced.
+
+`src/components/LivingBackground.astro` renders
+`<canvas aria-hidden="true" data-living-bg></canvas>`, absolutely positioned behind
+content at `z-index: 0` with the page content at `z-index: 1`, and a `<script>` that
+**dynamically imports** `rain.ts` on `requestIdleCallback` (falling back to a
+`setTimeout`), so nothing is in the LCP path. It pauses via `IntersectionObserver`
+and on `document.visibilitychange`, and re-reads the theme on the `data-theme`
+attribute change via a `MutationObserver`.
+
+Mount it in `Base.astro` behind the content.
+
+- [ ] **Step 9: Verify the four non-negotiables by hand**
+
+Run `pnpm build && pnpm preview`, then confirm and record:
+1. `dist/` has the rain code in its **own chunk**, not the main bundle.
+2. With JS disabled: both pages fully usable, canvas simply empty.
+3. With `prefers-reduced-motion: reduce`: a still field, not a blank one, and no
+   rAF activity in the performance profile.
+4. At a 375px viewport with CPU throttled 4×: the page stays interactive. Record
+   the actual frame cost.
+
+- [ ] **Step 10: Run the whole suite**
+
+Run: `pnpm vitest run && pnpm build`
+Expected: every suite PASS; build succeeds.
+
 - [ ] **Step 6: Stage and stop**
 
 ```bash
@@ -405,7 +503,7 @@ Expected: FAIL — `ENOENT: src/styles/tokens.css`.
 
 - [ ] **Step 3: Write the tokens**
 
-`src/styles/tokens.css`. Substitute the recorded Task 2 values for every `oklch(...)` below — the structure is fixed, the values are not invented here. Both themes are authored; the dark block is not a transform of the light one. The three-way theme handling matches the spec: bare `:root` is light, `prefers-color-scheme` covers the untouched default, and `[data-theme]` lets the toggle win in both directions.
+`src/styles/tokens.css`. **Copy every value from `docs/superpowers/decisions/2026-08-22-palette-and-type.md`** — it holds the complete 9-step neutral and accent ramps for both themes, the `accent-2` (magenta) steps, and the tone mapping for terminal lines. The structure below is fixed; the values are neither invented nor derived here. **Read that document's "Ramp semantics" section first: the step number is contrast rank against the ground, not absolute lightness, so lightness descends through the dark ramp and ascends through the light one. Do not "correct" it.** Also add `--font-heading: var(--font-mono);` to the theme-independent block, and add `'700'` to JetBrains Mono's `weights` array in `astro.config.mjs`. Both themes are authored; the dark block is not a transform of the light one. The three-way theme handling matches the spec: bare `:root` is light, `prefers-color-scheme` covers the untouched default, and `[data-theme]` lets the toggle win in both directions.
 
 ```css
 :root {
@@ -3233,11 +3331,12 @@ Do NOT commit. Report that the work is staged; the controller commits.
 
 ---
 
-## Task 15: Motion contract in practice — native scroll reveals
+## Task 15: Motion contract and the living background
 
 **Files:**
-- Modify: `src/styles/global.css`, `src/components/ProjectGrid.astro`, `src/components/Hero.astro`
-- Test: `tests/motion.test.ts`
+- Modify: `src/styles/global.css`, `src/components/ProjectGrid.astro`, `src/components/Hero.astro`, `src/layouts/Base.astro`
+- Create: `src/components/LivingBackground.astro`, `src/scripts/rain.ts`
+- Test: `tests/motion.test.ts`, `tests/dom/rain.test.ts`
 
 **Interfaces:**
 - Consumes: `--dur-*` and `--ease` tokens (Task 3), `data-motion` (Task 4).

@@ -301,23 +301,39 @@ constraint.
   over 48px at each end. Box outlines and in-control separators stay solid.
   It is a distinctive, cheap detail and it appears throughout the artboard.
 
-The specific hues are **chosen during implementation via the `frontend-design`
-skill, with rendered options presented for approval** — palette selection is
-design work that requires seeing it in the real layout, not a decision to make
-in prose. Because every colour resolves through the token layer (§8), this is a
-change to token values only.
+**DECIDED 2026-08-22 — direction "Systems Console".** The user reviewed three
+structurally different concepts and chose the Console for its colour, living
+background and feel, while keeping this artboard's layout and structure. The
+exact OKLCH values for both themes live in
+`docs/superpowers/decisions/2026-08-22-palette-and-type.md`, which Task 3
+transcribes verbatim.
 
-### Type
+Two accents, with a strict division of labour: **cyan** is structural (buttons,
+focus rings, links, featured border), **magenta** is reserved for what is
+*happening* (the live caret, active state, errors) and appears two or three
+times per screen at most.
 
+**Ramp semantics — unusual and load-bearing:** the step number is **contrast
+rank against the ground, not absolute lightness**. `100` is the text colour,
+`900` is a fill barely off the ground. Lightness therefore descends through the
+dark ramp and ascends through the light one, which is what lets a component
+write `var(--color-neutral-800)` once and be correct in both themes.
+
+### Type — no separate display face
+
+- **Headings: JetBrains Mono at weight 700, tracking `-0.03em`.**
+  `--font-heading` resolves to the same family as `--font-mono`. Mono at display
+  size is what makes the page read as a console rather than a dark page with
+  cyan on it. It also means **no third font is downloaded and
+  `astro.config.mjs` needs no new entry.**
 - **Body: Inter** (as designed). Excellent and unobtrusive.
-- **Headings: a display face with a voice** — replacing Nocturne's
-  `--font-heading: Inter`. Inter/Inter is the most common pairing on the web
-  and reads as templated; with it, the mono was carrying all of the site's
-  character. Candidates: Clash Display, Cabinet Grotesk, Space Grotesk,
-  Instrument Serif. Chosen alongside the palette, rendered in the real layout.
-  This is a single-token change (`--font-heading`).
-- **Mono: JetBrains Mono**, shared by the terminal, kickers, section labels,
-  and inline code — the shared mono is what ties the CLI to the site.
+- **Mono: JetBrains Mono**, shared by headings, the terminal, kickers, section
+  labels and inline code — that sharing is now the whole identity, not just a
+  tie-in.
+- **Retired:** the characterful-display-face plan and its Cabinet Grotesk /
+  Clash Display / Space Grotesk / Instrument Serif candidates. The first two are
+  Fontshare, not Google, and so were unavailable to `fontProviders.google()`
+  without self-hosting.
 - **All fonts are self-hosted.** The artboard pulls Inter and JetBrains Mono
   from `fonts.googleapis.com`; that is a third-party request on the critical
   path. Subset and self-host, with `font-display: swap` and a real fallback
@@ -366,6 +382,27 @@ written.
   animation library ships.
 - Page transitions use the View Transitions API via Astro, degrading to normal
   navigation where unsupported.
+
+### The living background (signature element)
+
+A **character-rain field** of mono glyphs falling in columns at varied speeds
+(bright magenta head, dim cyan tail) over a **slow scanline drift**, all at very
+low alpha. Adopted from the chosen concept; specified in the decision doc.
+
+Non-negotiable, because a decorative background is exactly where performance and
+accessibility quietly die:
+
+1. **Canvas, code-split, started on idle.** Never in the critical path, never
+   blocking LCP.
+2. **`prefers-reduced-motion`: one static frame, then nothing moves.** A still
+   field, not a blank one — the composition stays intact.
+3. **JS disabled: no effect on the page.** The canvas is decorative and
+   `aria-hidden`; without JS it is an empty transparent element.
+4. **Mobile: fewer columns, lower frame budget, paused when not visible**
+   (`IntersectionObserver`). The user asked specifically for mobile
+   compatibility; a background that drains a phone battery fails that.
+5. **Light theme uses lower alpha** — the dark theme's values read as dirt on a
+   near-white ground.
 
 ## 10. Accessibility
 
@@ -467,7 +504,11 @@ Claims are reported with evidence, not asserted.
 5. **JS disabled:** Home and About fully usable. This is the real test of the
    islands claim.
 6. `prefers-reduced-motion` enabled: no broken layouts, no motion.
-7. Throttled-network and small-viewport pass.
+7. Throttled-network and small-viewport pass. **Mobile compatibility is an
+   explicit user requirement, not a nice-to-have:** 375px and 414px viewports
+   both checked on every page, the bento grid reflowing to one column, the
+   terminal overlay usable with a touch keyboard, no horizontal body scroll, and
+   the living background measured for frame cost on a throttled CPU.
 8. **The is-agentic.com scan is actually run** against the deployed URL using
    the `browse` skill (the site requires a real browser to submit; it cannot be
    driven by a plain fetch). The real score and the list of failed checks are
