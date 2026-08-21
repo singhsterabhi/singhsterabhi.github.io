@@ -55,3 +55,14 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--color-text);
   border-radius: 8px;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-motion="full"]) *,
+  :root:not([data-motion="full"]) *::before,
+  :root:not([data-motion="full"]) *::after {
+    animation-duration: var(--dur-1) !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: var(--dur-1) !important;
+    scroll-behavior: auto !important;
+  }
+}

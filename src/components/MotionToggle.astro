@@ -1,0 +1,33 @@
+<button
+  id="motion-toggle"
+  type="button"
+  aria-label="Reduce animations"
+  class="rounded-lg border border-[var(--color-neutral-800)] px-2.5 py-1 font-[var(--font-mono)] text-[11px] text-[var(--color-neutral-500)] hover:border-[var(--color-accent)]"
+>motion</button>
+
+<script>
+  import { MOTION_KEY, resolveMotion, type Motion } from '../lib/motion';
+
+  const apply = (m: Motion) => {
+    document.documentElement.dataset.motion = m;
+    const btn = document.getElementById('motion-toggle');
+    btn?.setAttribute('aria-pressed', String(m === 'reduced'));
+    btn?.setAttribute('aria-label', m === 'reduced' ? 'Enable animations' : 'Reduce animations');
+  };
+
+  window.__setMotion = (m: Motion) => {
+    try { localStorage.setItem(MOTION_KEY, m); } catch {}
+    apply(m);
+  };
+
+  let current = resolveMotion(
+    (() => { try { return localStorage.getItem(MOTION_KEY); } catch { return null; } })(),
+    matchMedia('(prefers-reduced-motion: reduce)').matches,
+  );
+  apply(current);
+
+  document.getElementById('motion-toggle')?.addEventListener('click', () => {
+    current = current === 'reduced' ? 'full' : 'reduced';
+    window.__setMotion(current);
+  });
+</script>

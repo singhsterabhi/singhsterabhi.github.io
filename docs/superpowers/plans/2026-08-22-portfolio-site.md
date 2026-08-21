@@ -27,6 +27,8 @@ Every task's requirements implicitly include this section. Values are copied ver
 - **Dead-link rule:** a project card renders only the links it actually has. No card renders a URL that has not been verified resolving. (§6)
 - **No placeholder copy reaches `master`:** specifically not `hello@example.com`, not the notes-to-self timeline entries, not the striped portrait placeholder. (§13)
 - **The design artboard is a reference, not code to port.** No inline `style="…"` attributes in output; no `screens` switcher; no `screen`/`terminalAffordance`/`bentoColumns` props; `support.js` is not ported. (§8)
+- **Test placement rule — this is not cosmetic.** Astro's container renderer does **not** work under jsdom (verified on Astro 7.2.4: `renderToString` throws inside `NOOP_MIDDLEWARE_FN`). Therefore: tests that container-render `.astro` components live in **`tests/components/`** and run under **node** with NO environment pragma. Tests that genuinely need a DOM — React islands via `@testing-library/react`, anything touching `document` — live in **`tests/dom/`** and carry `// @vitest-environment jsdom` as their FIRST line. Putting a container-render test in `tests/dom/` with the pragma produces a confusing `NoMatchingRenderer` failure.
+- **Harness:** `vitest.config.ts` uses `getViteConfig` from `astro/config` (plain `defineConfig` cannot resolve `.astro` imports), with a base `environment: 'node'` and per-file pragmas for the DOM suites. `projects` was tried and rejected: each project gets its own Vite config and loses the root Astro plugin. Do not "simplify" this back.
 - **Package manager: pnpm 10.33.2.** Every command in this plan uses pnpm. `pnpm-lock.yaml` is committed — Cloudflare detects the package manager from it. Never run `npm install` in this repo; it would produce a competing `package-lock.json` and a different dependency tree than the one tested.
 - **Commit discipline — IMPLEMENTERS MUST NEVER COMMIT.** Do not run `git commit`, `git commit --amend`, or any command that creates a commit. Stage your work with `git add -A`, report, and stop. The controller commits in the main conversation, where the user sees each permission decision. **If any git command of yours is denied, that denial is final — report it as a concern and stop. Never re-run a denied command.** Retrying a denied call until it succeeds is a permission bypass and is treated as a task failure regardless of the outcome.
 - Commit messages (written by the controller) carry no `Co-Authored-By` trailer, no `Generated with` line, and no signature of any kind — the user asked for this explicitly.
@@ -636,7 +638,7 @@ Do NOT commit. Report that the work is staged; the controller commits.
 
 **Files:**
 - Create: `src/lib/theme.ts`, `src/lib/motion.ts`, `src/components/ThemeToggle.astro`, `src/components/MotionToggle.astro`
-- Test: `tests/theme.test.ts`, `tests/dom/toggles.test.ts`
+- Test: `tests/theme.test.ts`, `tests/components/toggles.test.ts`
 
 **Interfaces:**
 - Consumes: tokens from Task 3.
@@ -820,7 +822,7 @@ harness, not the code. Their *markup contract* is testable and is what actually
 breaks silently: an icon-only button with no accessible name is invisible to a
 screen reader, and `◑` is not a name.
 
-`tests/dom/toggles.test.ts`:
+`tests/components/toggles.test.ts`:
 ```ts
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it } from 'vitest';
@@ -856,7 +858,7 @@ describe('MotionToggle', () => {
 });
 ```
 
-Run: `pnpm vitest run tests/dom/toggles.test.ts`
+Run: `pnpm vitest run tests/components/toggles.test.ts`
 Expected: 5 PASS. If the accessible-name assertion fails on `MotionToggle`, note
 that its label is set by the inline script at runtime — the static markup must
 still carry a sensible fallback, so add one rather than relaxing the test.
@@ -918,7 +920,7 @@ Do NOT commit. Report that the work is staged; the controller commits.
 
 **Files:**
 - Create: `src/layouts/Base.astro`, `src/components/JsonLd.astro`
-- Test: `tests/dom/base-layout.test.ts`
+- Test: `tests/components/base-layout.test.ts`
 
 **Interfaces:**
 - Consumes: `src/styles/global.css`, `resolveTheme`, `resolveMotion`.
@@ -928,7 +930,7 @@ Do NOT commit. Report that the work is staged; the controller commits.
 
 The critical assertion is that the theme is applied **before first paint** — a blocking inline script in `<head>`, ahead of any stylesheet-driven paint. If it lands after, every dark-theme visitor sees a white flash.
 
-`tests/dom/base-layout.test.ts`:
+`tests/components/base-layout.test.ts`:
 ```ts
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it } from 'vitest';
@@ -998,7 +1000,7 @@ describe('Base layout', () => {
 
 - [ ] **Step 2: Run it to make sure it fails**
 
-Run: `pnpm vitest run tests/dom/base-layout.test.ts`
+Run: `pnpm vitest run tests/components/base-layout.test.ts`
 Expected: FAIL — cannot resolve `Base.astro`.
 
 - [ ] **Step 3: Write the layout**
@@ -1081,7 +1083,7 @@ const { data } = Astro.props;
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `pnpm vitest run tests/dom/base-layout.test.ts`
+Run: `pnpm vitest run tests/components/base-layout.test.ts`
 Expected: 6 PASS.
 
 - [ ] **Step 5: Stage and stop**
@@ -2206,7 +2208,7 @@ git add -A
 **Files:**
 - Create: `src/components/Nav.astro`, `src/components/Footer.astro`, `src/components/Hero.astro`, `src/components/ProjectCard.astro`, `src/components/ProjectGrid.astro`
 - Modify: `src/pages/index.astro` (replaces the Task 1 shell)
-- Test: `tests/dom/home.test.ts`
+- Test: `tests/components/home.test.ts`
 
 **Interfaces:**
 - Consumes: `Base.astro` (Task 5), `projects` collection (Task 6), `Terminal` island (Task 8), `TerminalButton`, `ThemeToggle`, `MotionToggle`.
@@ -2214,7 +2216,7 @@ git add -A
 
 - [ ] **Step 1: Write the failing test**
 
-`tests/dom/home.test.ts`:
+`tests/components/home.test.ts`:
 ```ts
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it } from 'vitest';
@@ -2278,7 +2280,7 @@ describe('ProjectCard — the dead-link rule (§6)', () => {
 
 - [ ] **Step 2: Run it to make sure it fails**
 
-Run: `pnpm vitest run tests/dom/home.test.ts`
+Run: `pnpm vitest run tests/components/home.test.ts`
 Expected: FAIL — cannot resolve `ProjectCard.astro`.
 
 - [ ] **Step 3: Write ProjectCard**
@@ -2349,7 +2351,7 @@ const titleClass = p.featured
 
 - [ ] **Step 4: Run the card tests to verify they pass**
 
-Run: `pnpm vitest run tests/dom/home.test.ts`
+Run: `pnpm vitest run tests/components/home.test.ts`
 Expected: 7 PASS.
 
 - [ ] **Step 5: Write Nav, Footer, Hero, ProjectGrid**
@@ -2545,7 +2547,7 @@ Do NOT commit. Report that the work is staged; the controller commits.
 
 **Files:**
 - Create: `src/components/Timeline.astro`, `src/pages/about.astro`
-- Test: `tests/dom/about.test.ts`
+- Test: `tests/components/about.test.ts`
 
 **Interfaces:**
 - Consumes: `Base.astro`, `timeline` collection (Task 6, currently empty), `Nav`, `Footer`, `Terminal`.
@@ -2555,7 +2557,7 @@ Do NOT commit. Report that the work is staged; the controller commits.
 
 The important assertions are the two graceful-degradation cases: the timeline is empty until §13 inputs arrive, and the portrait may be absent. Neither may leave a hole.
 
-`tests/dom/about.test.ts`:
+`tests/components/about.test.ts`:
 ```ts
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it } from 'vitest';
@@ -2596,7 +2598,7 @@ describe('Timeline', () => {
 
 - [ ] **Step 2: Run it to make sure it fails**
 
-Run: `pnpm vitest run tests/dom/about.test.ts`
+Run: `pnpm vitest run tests/components/about.test.ts`
 Expected: FAIL — cannot resolve `Timeline.astro`.
 
 - [ ] **Step 3: Write Timeline**
@@ -2631,7 +2633,7 @@ const { entries } = Astro.props;
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `pnpm vitest run tests/dom/about.test.ts`
+Run: `pnpm vitest run tests/components/about.test.ts`
 Expected: 4 PASS.
 
 - [ ] **Step 5: Write the About route**
