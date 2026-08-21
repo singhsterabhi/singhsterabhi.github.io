@@ -1,0 +1,66 @@
+---
+import { Font } from 'astro:assets';
+import '../styles/global.css';
+import JsonLd from '../components/JsonLd.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  canonical: string;
+  /** Absolute URL of this page's markdown twin (§11). Passed explicitly —
+      deriving it from `canonical` yields /about/index.md, which is a 404. */
+  markdownUrl?: string;
+  jsonLd?: object;
+}
+const { title, description, canonical, markdownUrl, jsonLd } = Astro.props;
+---
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <!-- Agent-facing alternates (§11) -->
+    <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
+    {markdownUrl && <link rel="alternate" type="text/markdown" href={markdownUrl} />}
+
+    <Font cssVariable="--font-body" preload />
+    <Font cssVariable="--font-mono" preload />
+
+    <!-- Blocking, inline, first: applies theme and motion before first paint.
+         Duplicated from src/lib/* deliberately — it must run before any module
+         graph loads, so it cannot import. Keep in sync with those files.
+         Uses setAttribute (not the .dataset shorthand used elsewhere) so the
+         literal "data-theme"/"data-motion" strings are present in this
+         unexecuted script source, which is what the no-flash test inspects. -->
+    <script is:inline>
+      (function () {
+        try {
+          var s = localStorage.getItem('theme');
+          var t = (s === 'light' || s === 'dark')
+            ? s
+            : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', t);
+
+          var m = localStorage.getItem('motion');
+          var mo = (m === 'full' || m === 'reduced')
+            ? m
+            : (matchMedia('(prefers-reduced-motion: reduce)').matches ? 'reduced' : 'full');
+          document.documentElement.setAttribute('data-motion', mo);
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'light');
+          document.documentElement.setAttribute('data-motion', 'full');
+        }
+      })();
+    </script>
+
+    {jsonLd && <JsonLd data={jsonLd} />}
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <slot />
+  </body>
+</html>

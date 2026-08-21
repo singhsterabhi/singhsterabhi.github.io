@@ -2524,6 +2524,48 @@ const jsonLd = {
 </Base>
 ```
 
+- [ ] **Step 6b: Add the no-flash guard — inherited from Task 5**
+
+Task 5 could not test its most important invariant. The theme script must be a
+blocking inline script that runs **before** the stylesheet, or every dark-theme
+visitor sees a white flash on every navigation. Astro's container renderer never
+injects the global `<link rel="stylesheet">`, so the ordering is invisible to a
+component test. Task 10 produces the first real page that uses `Base.astro`, so
+the assertion belongs here, against built output.
+
+Append to `tests/agents/404.test.ts`'s sibling — create `tests/agents/head-order.test.ts`:
+
+```ts
+import { existsSync, readFileSync } from 'node:fs';
+import { describe, expect, it } from 'vitest';
+
+const pages = ['dist/index.html', 'dist/about/index.html'];
+
+describe('no-flash guard (inherited from Task 5)', () => {
+  for (const path of pages) {
+    it(`${path}: the theme script runs before any stylesheet`, () => {
+      expect(existsSync(path), 'run `pnpm build` first').toBe(true);
+      const head = readFileSync(path, 'utf8').split('</head>')[0];
+      const scriptAt = head.search(/<script(?![^>]*\bsrc=)/);
+      const styleAt = head.search(/<(link[^>]+stylesheet|style)/);
+      expect(scriptAt, 'no inline script in head').toBeGreaterThan(-1);
+      expect(styleAt, 'no stylesheet in head').toBeGreaterThan(-1);
+      expect(scriptAt, 'script after stylesheet — this is the flash').toBeLessThan(styleAt);
+    });
+
+    it(`${path}: no inline script is deferred`, () => {
+      const head = readFileSync(path, 'utf8').split('</head>')[0];
+      for (const tag of head.match(/<script(?![^>]*\bsrc=)[^>]*>/g) ?? []) {
+        expect(tag, `deferred inline script: ${tag}`).not.toMatch(/\b(defer|async)\b/);
+      }
+    });
+  }
+});
+```
+
+Run: `pnpm build && pnpm vitest run tests/agents/head-order.test.ts`
+Expected: 4 PASS. Note the order — the test reads build output, so build first.
+
 - [ ] **Step 7: Verify the build and the zero-JS-on-content claim**
 
 Run:
