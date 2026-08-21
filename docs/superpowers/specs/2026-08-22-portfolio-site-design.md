@@ -218,6 +218,11 @@ The artboard renders the overlay as a `<div role="dialog" aria-modal="true">`.
 focus trapping, focus restore on close, and `Esc` handling from the platform
 rather than hand-rolled. This is invisible to the design and strictly better.
 
+`/terminal` **canonicalises to Home**, not to itself. It renders Home's content
+with the overlay already open, so it is an alias; a self-canonical would
+advertise near-duplicate content to search engines. The URL stays shareable and
+functional — only the indexing signal points elsewhere.
+
 It is an overlay layer rather than a destination so that recruiters are never
 blocked by it and peers find it immediately. `/terminal` exists as a shareable
 alias that deep-opens the overlay, giving a linkable URL without making the CLI

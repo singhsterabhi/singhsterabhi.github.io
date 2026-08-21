@@ -2963,7 +2963,10 @@ const site = Astro.site!.href;
 <Base
   title="Terminal — Abhishek Singh"
   description="A command-line view of Abhishek Singh's portfolio. The same commands agents get through WebMCP."
-  canonical={site + 'terminal'}
+  {/* Canonical points at Home deliberately: this route renders Home's content
+      with the terminal already open, so it is an alias rather than a separate
+      page (spec §7). Self-canonicalising would advertise near-duplicate content. */}
+  canonical={site}
 >
   <Nav current="home" />
   <main id="main">

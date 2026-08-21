@@ -25,4 +25,12 @@ describe('404 page (built output)', () => {
   it('states plainly that it is a real 404', () => {
     expect(readFileSync(path, 'utf8')).toContain('genuinely, not a soft one');
   });
+
+  it('advertises no markdown twin — there is no /404.md', () => {
+    expect(readFileSync(path, 'utf8')).not.toContain('text/markdown');
+  });
+
+  it('links no résumé, per the generalised dead-link rule', () => {
+    expect(readFileSync(path, 'utf8')).not.toContain('Résumé');
+  });
 });
