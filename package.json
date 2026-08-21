@@ -26,6 +26,8 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.5",
     "@types/culori": "4.0.1",
     "@types/react": "19.2.18",
     "culori": "4.0.2",

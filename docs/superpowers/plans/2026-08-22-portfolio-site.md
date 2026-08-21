@@ -892,14 +892,23 @@ introduces that class. Do not add it here.
 Create `src/env.d.ts`:
 ```ts
 /// <reference types="astro/client" />
-import type { Theme } from './lib/theme';
-import type { Motion } from './lib/motion';
 
-declare global {
-  interface Window {
-    __setTheme?: (t: Theme) => void;
-    __setMotion?: (m: Motion) => void;
-  }
+// This file must stay a global SCRIPT — no top-level import/export. Two
+// consequences, both load-bearing:
+//  * `interface Window` merges globally on its own here. A `declare global`
+//    wrapper does nothing in a script file, so the augmentation silently fails
+//    to apply and window.__setTheme ends up untyped.
+//  * `declare module '*.astro'` is only ambient in script context; a top-level
+//    import turns this into a module and that declaration stops working.
+// Use inline import() types, never import statements.
+interface Window {
+  __setTheme?: (t: import('./lib/theme').Theme) => void;
+  __setMotion?: (m: import('./lib/motion').Motion) => void;
+}
+
+declare module '*.astro' {
+  const Component: (props?: Record<string, unknown>) => unknown;
+  export default Component;
 }
 ```
 
@@ -1740,8 +1749,14 @@ pnpm add -D @testing-library/react@latest @testing-library/user-event@latest
 ```tsx
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeAll, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { cleanup } from '@testing-library/react';
 import Terminal from '../../src/islands/Terminal';
+
+// @testing-library/react only auto-registers afterEach(cleanup) when Vitest runs
+// with globals: true, which this project does not. Without this, renders leak
+// between tests and later assertions match stale DOM.
+afterEach(cleanup);
 
 const projects = [
   { slug: 'table-kit', title: 'A headless table toolkit', repo: 'https://x/tk' },
@@ -1840,7 +1855,7 @@ const TONE: Record<Line['tone'], string> = {
   out: 'var(--color-neutral-300)',
   muted: 'var(--color-neutral-600)',
   accent: 'var(--color-accent-300)',
-  err: 'var(--color-accent-400)',
+  err: 'var(--color-accent-2-300)',  // magenta — errors only (decision doc)
 };
 
 const BANNER: Line[] = [
