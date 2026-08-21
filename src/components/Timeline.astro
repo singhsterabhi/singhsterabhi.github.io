@@ -1,0 +1,24 @@
+---
+interface Entry { when: string; role: string; note: string }
+interface Props { entries: Entry[] }
+const { entries } = Astro.props;
+---
+{entries.length > 0 && (
+  <section class="mx-auto max-w-[1120px] px-5 md:px-10 pb-28 pt-14">
+    <h2 class="mb-6 font-mono text-[13px] font-medium uppercase tracking-[0.16em] text-[var(--color-neutral-600)]">
+      Where I've worked
+    </h2>
+    <div class="hr mb-2"></div>
+    <ol class="m-0 list-none p-0">
+      {entries.map((t) => (
+        <li class="grid gap-8 border-b border-[var(--color-surface)] py-5.5 md:grid-cols-[180px_minmax(0,1fr)]">
+          <span class="pt-0.5 font-mono text-[13px] text-[var(--color-neutral-600)]">{t.when}</span>
+          <div>
+            <h3 class="mb-1.5 font-heading text-[19px] leading-tight">{t.role}</h3>
+            <p class="m-0 max-w-[58ch] text-[15px] leading-relaxed text-[var(--color-neutral-500)]">{t.note}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </section>
+)}

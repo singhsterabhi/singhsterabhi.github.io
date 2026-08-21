@@ -1,9 +1,8 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-// Scoped to dist/index.html only: dist/about/index.html does not exist until
-// Task 11 builds the About page. The About case will be restored there.
-const pages = ['dist/index.html'];
+// Task 11 built the About page, so both routes are checked.
+const pages = ['dist/index.html', 'dist/about/index.html'];
 
 const headOf = (path: string) =>
   readFileSync(path, 'utf8')

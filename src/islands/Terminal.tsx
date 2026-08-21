@@ -129,23 +129,23 @@ export default function Terminal({
           <span className="size-2.5 rounded-full bg-[var(--color-neutral-800)]" />
           <span className="size-2.5 rounded-full bg-[var(--color-neutral-800)]" />
           <span className="size-2.5 rounded-full bg-[var(--color-neutral-800)]" />
-          <span className="ml-2 font-[var(--font-mono)] text-xs text-[var(--color-neutral-600)]">
+          <span className="ml-2 font-mono text-xs text-[var(--color-neutral-600)]">
             abhishek@portfolio — ~
           </span>
           <button
             type="button"
             onClick={closeDialog}
-            className="ml-auto font-[var(--font-mono)] text-[11px] text-[var(--color-neutral-700)]"
+            className="ml-auto font-mono text-[11px] text-[var(--color-neutral-700)]"
           >esc to close</button>
         </div>
 
         <div
           ref={scrollRef}
           aria-live="polite"
-          className="flex-1 overflow-y-auto px-4.5 py-4 font-[var(--font-mono)] text-[13.5px] leading-[1.85]"
+          className="flex-1 overflow-auto px-4.5 py-4 font-mono text-[13.5px] leading-[1.85]"
         >
           {lines.map((l, i) => (
-            <div key={i} style={{ color: TONE[l.tone] }}>{l.text}</div>
+            <div key={i} className="whitespace-pre" style={{ color: TONE[l.tone] }}>{l.text}</div>
           ))}
           <div className="mt-0.5 flex items-baseline gap-2.5">
             <span className="flex-none text-[var(--color-accent)]">❯</span>
@@ -157,12 +157,12 @@ export default function Terminal({
               spellCheck={false}
               autoComplete="off"
               aria-label="Command"
-              className="flex-1 border-0 bg-transparent p-0 font-[var(--font-mono)] text-[13.5px] leading-[1.85] text-[var(--color-text)] outline-none"
+              className="flex-1 border-0 bg-transparent p-0 font-mono text-[13.5px] leading-[1.85] text-[var(--color-text)] outline-none"
             />
           </div>
         </div>
 
-        <div className="flex flex-none gap-4.5 border-t border-[var(--color-neutral-900)] px-4 py-2.5 font-[var(--font-mono)] text-[11px] text-[var(--color-neutral-700)]">
+        <div className="flex flex-none gap-4.5 border-t border-[var(--color-neutral-900)] px-4 py-2.5 font-mono text-[11px] text-[var(--color-neutral-700)]">
           <span>tab completes</span><span>↑↓ history</span><span>help lists everything</span>
           <span className="ml-auto text-[var(--color-neutral-600)]">shareable at /terminal</span>
         </div>

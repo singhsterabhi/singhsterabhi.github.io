@@ -27,6 +27,7 @@ Every task's requirements implicitly include this section. Values are copied ver
 - **Dead-link rule:** a project card renders only the links it actually has. No card renders a URL that has not been verified resolving. (§6)
 - **No placeholder copy reaches `master`:** specifically not `hello@example.com`, not the notes-to-self timeline entries, not the striped portrait placeholder. (§13)
 - **The design artboard is a reference, not code to port.** No inline `style="…"` attributes in output; no `screens` switcher; no `screen`/`terminalAffordance`/`bentoColumns` props; `support.js` is not ported. (§8)
+- **Never use an arbitrary value for font-family.** Tailwind v4 emits NO rule for `font-[var(--font-mono)]` or `font-[family-name:var(--font-mono)]` — both are silently dropped, so the element inherits the body sans. Proven by building a probe page and grepping the emitted CSS. Use the generated utilities `font-mono` / `font-heading` / `font-body`, which exist because `global.css` registers the tokens in `@theme inline` (verified: `.font-mono{font-family:var(--font-mono)}`). This defect shipped in 24 places across 11 files and survived 118 passing tests, because no assertion checked a computed font-family — the site's entire mono identity was rendering in Inter.
 - **Horizontal nav rows must wrap, not be tuned.** Any header that is a single flex row of a brand plus several controls has *some* width where it overflows; shaving `gap` values fixes one breakpoint and leaves the next one broken (measured: `gap-4` fixed 375 and left 320 overflowing by 23px). Give such rows `flex-wrap` with a `gap-y`, so the controls drop to a second line instead of overflowing at any width — including widths nobody tested.
 - **Responsive padding rule.** The artboard's `padding-inline: 40px` is a DESKTOP measurement. Every use of the 1120px content column takes `px-5 md:px-10`, never bare `px-10` — verified in a real browser: at 375px, 40px of padding each side leaves 295px, and the header's brand plus four nav items overflow to `scrollWidth` 428 against a 375 viewport. Mobile compatibility is an explicit user requirement, so a bare `px-10` is a defect. The same applies to any `gap-7` in a horizontal nav row: use `gap-4 md:gap-7`.
 - **Viewport verification is not optional and vitest cannot do it.** Before a page task is complete, load the built page in the headless browser at 320 / 375 / 414 / 768 / 1440 and assert `document.body.scrollWidth <= document.documentElement.clientWidth` at every width, plus 280 as a control — a real fix passes at a width nothing real uses, a tuned one does not. Two real mobile defects in Task 10 were invisible to 109 passing tests.
@@ -786,7 +787,7 @@ Both toggles are plain HTML buttons with a tiny inline script — no framework, 
 <button
   id="motion-toggle"
   type="button"
-  class="rounded-lg border border-[var(--color-neutral-800)] px-2.5 py-1 font-[var(--font-mono)] text-[11px] text-[var(--color-neutral-500)] hover:border-[var(--color-accent)]"
+  class="rounded-lg border border-[var(--color-neutral-800)] px-2.5 py-1 font-mono text-[11px] text-[var(--color-neutral-500)] hover:border-[var(--color-accent)]"
 >motion</button>
 
 <script>
@@ -1988,23 +1989,26 @@ export default function Terminal({
           <span className="size-2.5 rounded-full bg-[var(--color-neutral-800)]" />
           <span className="size-2.5 rounded-full bg-[var(--color-neutral-800)]" />
           <span className="size-2.5 rounded-full bg-[var(--color-neutral-800)]" />
-          <span className="ml-2 font-[var(--font-mono)] text-xs text-[var(--color-neutral-600)]">
+          <span className="ml-2 font-mono text-xs text-[var(--color-neutral-600)]">
             abhishek@portfolio — ~
           </span>
           <button
             type="button"
             onClick={closeDialog}
-            className="ml-auto font-[var(--font-mono)] text-[11px] text-[var(--color-neutral-700)]"
+            className="ml-auto font-mono text-[11px] text-[var(--color-neutral-700)]"
           >esc to close</button>
         </div>
 
         <div
           ref={scrollRef}
           aria-live="polite"
-          className="flex-1 overflow-y-auto px-4.5 py-4 font-[var(--font-mono)] text-[13.5px] leading-[1.85]"
+          className="flex-1 overflow-auto px-4.5 py-4 font-mono text-[13.5px] leading-[1.85]"
         >
           {lines.map((l, i) => (
-            <div key={i} style={{ color: TONE[l.tone] }}>{l.text}</div>
+            // whitespace-pre is load-bearing: the registry aligns `help`,
+            // `projects` and `contact` output with padEnd, and HTML collapses
+            // runs of spaces, so without it every column renders as prose.
+            <div key={i} className="whitespace-pre" style={{ color: TONE[l.tone] }}>{l.text}</div>
           ))}
           <div className="mt-0.5 flex items-baseline gap-2.5">
             <span className="flex-none text-[var(--color-accent)]">❯</span>
@@ -2016,12 +2020,12 @@ export default function Terminal({
               spellCheck={false}
               autoComplete="off"
               aria-label="Command"
-              className="flex-1 border-0 bg-transparent p-0 font-[var(--font-mono)] text-[13.5px] leading-[1.85] text-[var(--color-text)] outline-none"
+              className="flex-1 border-0 bg-transparent p-0 font-mono text-[13.5px] leading-[1.85] text-[var(--color-text)] outline-none"
             />
           </div>
         </div>
 
-        <div className="flex flex-none gap-4.5 border-t border-[var(--color-neutral-900)] px-4 py-2.5 font-[var(--font-mono)] text-[11px] text-[var(--color-neutral-700)]">
+        <div className="flex flex-none gap-4.5 border-t border-[var(--color-neutral-900)] px-4 py-2.5 font-mono text-[11px] text-[var(--color-neutral-700)]">
           <span>tab completes</span><span>↑↓ history</span><span>help lists everything</span>
           <span className="ml-auto text-[var(--color-neutral-600)]">shareable at /terminal</span>
         </div>
@@ -2044,11 +2048,11 @@ const { variant = 'hero' } = Astro.props;
   <button
     type="button"
     data-open-terminal
-    class="inline-flex items-center gap-3 rounded-[10px] border border-[var(--color-neutral-800)] bg-[color-mix(in_oklch,var(--color-bg)_84%,black)] px-4 py-3 font-[var(--font-mono)] text-[13px] text-[var(--color-neutral-300)] hover:border-[var(--color-accent)]"
+    class="inline-flex items-center gap-3 rounded-[10px] border border-[var(--color-neutral-800)] bg-[color-mix(in_oklch,var(--color-bg)_84%,black)] px-4 py-3 font-mono text-[13px] text-[var(--color-neutral-300)] hover:border-[var(--color-accent)]"
   >
     <span class="text-[var(--color-accent)]">❯</span>
     <span>poke around in the terminal</span>
-    <kbd class="rounded border border-[var(--color-neutral-800)] px-1.5 py-[3px] font-[var(--font-mono)] text-[11px] text-[var(--color-neutral-600)]">` or ⌘K</kbd>
+    <kbd class="rounded border border-[var(--color-neutral-800)] px-1.5 py-[3px] font-mono text-[11px] text-[var(--color-neutral-600)]">` or ⌘K</kbd>
   </button>
 ) : (
   <button
@@ -2057,7 +2061,7 @@ const { variant = 'hero' } = Astro.props;
     class="inline-flex items-center gap-2 rounded-lg border border-[var(--color-neutral-800)] py-1.5 pl-3 pr-2.5 text-[13px] text-[var(--color-neutral-400)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent-300)]"
   >
     Terminal
-    <kbd class="rounded border border-[var(--color-neutral-800)] px-1.5 py-[3px] font-[var(--font-mono)] text-[11px] text-[var(--color-neutral-600)]">`</kbd>
+    <kbd class="rounded border border-[var(--color-neutral-800)] px-1.5 py-[3px] font-mono text-[11px] text-[var(--color-neutral-600)]">`</kbd>
   </button>
 )}
 
@@ -2365,17 +2369,17 @@ const cardClass = [
 ].join(' ');
 
 const titleClass = p.featured
-  ? 'font-[var(--font-heading)] text-[27px] leading-tight tracking-[-0.02em] mb-3 max-w-[24ch]'
-  : 'font-[var(--font-heading)] text-[22px] leading-tight tracking-[-0.02em] mb-3 max-w-[24ch]';
+  ? 'font-heading text-[27px] leading-tight tracking-[-0.02em] mb-3 max-w-[24ch]'
+  : 'font-heading text-[22px] leading-tight tracking-[-0.02em] mb-3 max-w-[24ch]';
 ---
 <article class={cardClass}>
   <div>
     <div class="mb-3.5 flex items-center gap-2.5">
-      <span class="font-[var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-[var(--color-neutral-600)]">
+      <span class="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--color-neutral-600)]">
         {p.kicker}
       </span>
       {p.featured && (
-        <span class="rounded border border-[var(--color-accent-800)] bg-[color-mix(in_oklch,var(--color-accent)_10%,transparent)] px-1.5 py-1 font-[var(--font-mono)] text-[10px] uppercase tracking-[0.1em] text-[var(--color-accent-300)]">
+        <span class="rounded border border-[var(--color-accent-800)] bg-[color-mix(in_oklch,var(--color-accent)_10%,transparent)] px-1.5 py-1 font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--color-accent-300)]">
           featured
         </span>
       )}
@@ -2388,7 +2392,7 @@ const titleClass = p.featured
   <div>
     <div class="mb-4.5 flex flex-wrap gap-1.5">
       {p.tags.map((t) => (
-        <span class="rounded bg-[var(--color-neutral-900)] px-2 py-1.5 font-[var(--font-mono)] text-[11px] text-[var(--color-neutral-500)]">{t}</span>
+        <span class="rounded bg-[var(--color-neutral-900)] px-2 py-1.5 font-mono text-[11px] text-[var(--color-neutral-500)]">{t}</span>
       ))}
     </div>
     <div class="flex gap-2">
@@ -2426,7 +2430,7 @@ const { current } = Astro.props;
 const link = 'text-sm no-underline hover:text-[var(--color-text)]';
 ---
 <header class="mx-auto flex max-w-[1120px] items-center justify-between gap-6 px-5 md:px-10 py-5.5">
-  <a href="/" class="font-[var(--font-heading)] text-[15px] font-medium tracking-[-0.01em] text-[var(--color-text)] no-underline">
+  <a href="/" class="font-heading text-[15px] font-medium tracking-[-0.01em] text-[var(--color-text)] no-underline">
     abhishek<span class="text-[var(--color-accent)]">.</span>
   </a>
   <nav class="flex items-center gap-7" aria-label="Main">
@@ -2450,7 +2454,7 @@ const link = 'text-[13px] text-[var(--color-neutral-500)] no-underline hover:tex
 ---
 <footer class="border-t border-[var(--color-neutral-900)]">
   <div class="mx-auto flex max-w-[1120px] flex-wrap items-center justify-between gap-4 px-5 md:px-10 py-7">
-    <span class="font-[var(--font-mono)] text-xs text-[var(--color-neutral-700)]">
+    <span class="font-mono text-xs text-[var(--color-neutral-700)]">
       built with astro · deployed on cloudflare
     </span>
     <div class="flex items-center gap-5">
@@ -2472,10 +2476,10 @@ const primary = 'inline-flex items-center gap-2 rounded-lg border border-[var(--
 const secondary = 'inline-flex items-center gap-2 rounded-lg border border-[var(--color-neutral-800)] px-4.5 py-2.5 text-sm font-medium text-[var(--color-text)] no-underline hover:border-[var(--color-neutral-700)]';
 ---
 <section class="mx-auto max-w-[1120px] px-5 md:px-10 pb-22 pt-24">
-  <p class="mb-7 font-[var(--font-mono)] text-[11px] font-medium uppercase tracking-[0.16em] text-[var(--color-neutral-600)]">
+  <p class="mb-7 font-mono text-[11px] font-medium uppercase tracking-[0.16em] text-[var(--color-neutral-600)]">
     Bengaluru · open to talk
   </p>
-  <h1 class="mb-6 max-w-[16ch] font-[var(--font-heading)] text-[clamp(44px,6.4vw,76px)] leading-[1.02] tracking-[-0.03em]">
+  <h1 class="mb-6 max-w-[16ch] font-heading text-[clamp(44px,6.4vw,76px)] leading-[1.02] tracking-[-0.03em]">
     Abhishek Singh
   </h1>
   <p class="mb-10 max-w-[34ch] text-[21px] leading-normal text-[var(--color-neutral-300)] text-pretty">
@@ -2501,7 +2505,7 @@ const { projects } = Astro.props;
 ---
 <section id="work" class="mx-auto max-w-[1120px] px-5 md:px-10 pb-24">
   <div class="mb-6 flex items-baseline justify-between gap-6">
-    <h2 class="font-[var(--font-mono)] text-[13px] font-medium uppercase tracking-[0.16em] text-[var(--color-neutral-600)]">
+    <h2 class="font-mono text-[13px] font-medium uppercase tracking-[0.16em] text-[var(--color-neutral-600)]">
       Selected work
     </h2>
     <span class="text-[13px] text-[var(--color-neutral-700)]">two things I actually finished</span>
@@ -2571,7 +2575,7 @@ const jsonLd = {
     <ProjectGrid projects={projects} />
     <section class="mx-auto max-w-[1120px] px-5 md:px-10 pb-28">
       <div class="max-w-[56ch]">
-        <h2 class="mb-5 font-[var(--font-mono)] text-[13px] font-medium uppercase tracking-[0.16em] text-[var(--color-neutral-600)]">About</h2>
+        <h2 class="mb-5 font-mono text-[13px] font-medium uppercase tracking-[0.16em] text-[var(--color-neutral-600)]">About</h2>
         <p class="mb-5.5 text-[20px] leading-snug text-[var(--color-neutral-300)] text-pretty">
           Grew up in Gorakhpur, currently a bit of a nomad. I care about the boring parts — cold starts, empty states, the third click — and I like the kind of work where the fix is small and the difference is obvious.
         </p>
@@ -2721,16 +2725,16 @@ const { entries } = Astro.props;
 ---
 {entries.length > 0 && (
   <section class="mx-auto max-w-[1120px] px-5 md:px-10 pb-28 pt-14">
-    <h2 class="mb-6 font-[var(--font-mono)] text-[13px] font-medium uppercase tracking-[0.16em] text-[var(--color-neutral-600)]">
+    <h2 class="mb-6 font-mono text-[13px] font-medium uppercase tracking-[0.16em] text-[var(--color-neutral-600)]">
       Where I've worked
     </h2>
     <div class="hr mb-2"></div>
     <ol class="m-0 list-none p-0">
       {entries.map((t) => (
         <li class="grid gap-8 border-b border-[var(--color-surface)] py-5.5 md:grid-cols-[180px_minmax(0,1fr)]">
-          <span class="pt-0.5 font-[var(--font-mono)] text-[13px] text-[var(--color-neutral-600)]">{t.when}</span>
+          <span class="pt-0.5 font-mono text-[13px] text-[var(--color-neutral-600)]">{t.when}</span>
           <div>
-            <h3 class="mb-1.5 font-[var(--font-heading)] text-[19px] leading-tight">{t.role}</h3>
+            <h3 class="mb-1.5 font-heading text-[19px] leading-tight">{t.role}</h3>
             <p class="m-0 max-w-[58ch] text-[15px] leading-relaxed text-[var(--color-neutral-500)]">{t.note}</p>
           </div>
         </li>
@@ -2784,7 +2788,7 @@ const body = 'mb-5 text-[17px] leading-[1.7] text-[var(--color-neutral-400)] tex
   <Nav current="about" />
   <main id="main">
     <div class="mx-auto max-w-[1120px] px-5 md:px-10 pb-10 pt-18">
-      <h1 class="mb-8 max-w-[20ch] font-[var(--font-heading)] text-[clamp(36px,4.6vw,54px)] leading-[1.05] tracking-[-0.03em]">
+      <h1 class="mb-8 max-w-[20ch] font-heading text-[clamp(36px,4.6vw,54px)] leading-[1.05] tracking-[-0.03em]">
         A short honest version
       </h1>
       <div class="max-w-[62ch]">
@@ -2896,16 +2900,16 @@ const secondary = 'inline-flex items-center rounded-lg border border-[var(--colo
   <meta name="robots" content="noindex" slot="head" />
   <main id="main" class="grid min-h-screen place-items-center bg-[radial-gradient(90%_50%_at_20%_10%,color-mix(in_oklch,var(--color-surface)_68%,var(--color-accent-900))_0%,transparent_60%)]">
     <div class="max-w-[640px] p-10">
-      <p class="mb-6 font-[var(--font-mono)] text-[11px] font-medium uppercase tracking-[0.16em] text-[var(--color-neutral-600)]">
+      <p class="mb-6 font-mono text-[11px] font-medium uppercase tracking-[0.16em] text-[var(--color-neutral-600)]">
         HTTP 404 · genuinely, not a soft one
       </p>
-      <h1 class="mb-6 font-[var(--font-heading)] text-[clamp(48px,7vw,84px)] leading-none tracking-[-0.035em]">
+      <h1 class="mb-6 font-heading text-[clamp(48px,7vw,84px)] leading-none tracking-[-0.035em]">
         Nothing here.
       </h1>
       <p class="mb-3 max-w-[44ch] text-[19px] leading-relaxed text-[var(--color-neutral-300)] text-pretty">
         Either I moved it, or you typed it hopefully. Both are fair.
       </p>
-      <p class="mb-8 font-[var(--font-mono)] text-[13px] leading-[1.9] text-[var(--color-neutral-600)]">
+      <p class="mb-8 font-mono text-[13px] leading-[1.9] text-[var(--color-neutral-600)]">
         tried: <span class="text-[var(--color-neutral-400)]">/the-page-you-wanted</span><br />
         found: <span class="text-[var(--color-neutral-400)]">nothing, with a straight face</span>
       </p>

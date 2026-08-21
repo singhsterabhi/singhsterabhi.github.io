@@ -1,0 +1,66 @@
+---
+import { existsSync } from 'node:fs';
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import Timeline from '../components/Timeline.astro';
+import Terminal from '../islands/Terminal';
+import { CONTACT, RESUME_PATH } from '../commands/registry';
+
+const entries = (await getCollection('timeline')).map((e) => e.data);
+const projects = (await getCollection('projects')).map((e) => e.data);
+const site = Astro.site!.href;
+const canonical = site + 'about';
+
+// Same dead-link rule the project cards and Hero follow (spec §6): never
+// render a link to an outstanding input. public/ does not exist yet, so
+// today this renders only "Email me".
+const hasResume = existsSync(`public${RESUME_PATH}`);
+
+const primary = 'inline-flex items-center rounded-lg border border-[var(--color-accent)] px-4.5 py-2.5 text-sm font-medium text-[var(--color-accent-300)] no-underline hover:bg-[color-mix(in_oklch,var(--color-accent)_12%,transparent)]';
+const secondary = 'inline-flex items-center rounded-lg border border-[var(--color-neutral-800)] px-4.5 py-2.5 text-sm font-medium text-[var(--color-text)] no-underline hover:border-[var(--color-neutral-700)]';
+const body = 'mb-5 text-[17px] leading-[1.7] text-[var(--color-neutral-400)] text-pretty';
+---
+<Base
+  title="About — Abhishek Singh"
+  description="Gorakhpur by origin, nomad by habit. A short honest version of who Abhishek Singh is and the work he enjoys."
+  canonical={canonical}
+  markdownUrl={site + 'about.md'}
+  jsonLd={{
+    '@context': 'https://schema.org',
+    '@type': 'AboutPage',
+    url: canonical,
+    mainEntity: { '@type': 'Person', name: 'Abhishek Singh', url: site },
+  }}
+>
+  <Nav current="about" />
+  <main id="main">
+    <div class="mx-auto max-w-[1120px] px-5 md:px-10 pb-10 pt-18">
+      <h1 class="mb-8 max-w-[20ch] font-heading text-[clamp(36px,4.6vw,54px)] leading-[1.05] tracking-[-0.03em]">
+        A short honest version
+      </h1>
+      <div class="max-w-[62ch]">
+        <p class="mb-5 text-[18px] leading-[1.65] text-[var(--color-neutral-300)] text-pretty">
+          I'm Abhishek. I grew up in Gorakhpur and I've been a bit of a nomad since — a few cities, a few teams, one steady habit of taking things apart to see why they're slow.
+        </p>
+        <p class={body}>
+          Work-wise I sit in the middle: interfaces on one side, the services behind them on the other. The parts I enjoy most are the unglamorous ones — a table that stays smooth at ten thousand rows, an endpoint whose p99 doesn't wobble when traffic triples, an empty state that tells you what to do next.
+        </p>
+        <p class={body}>
+          Away from a keyboard it's mostly music and movies, and a running list of both that I'm always happy to argue about.
+        </p>
+        <p class="m-0 text-[17px] leading-[1.7] text-[var(--color-neutral-400)] text-pretty">
+          If any of this sounds like your kind of problem — hit me up.
+        </p>
+      </div>
+      <div class="mt-9 flex flex-wrap gap-2.5">
+        <a class={primary} href={`mailto:${CONTACT.email}`}>Email me</a>
+        {hasResume && <a class={secondary} href={RESUME_PATH}>Résumé PDF</a>}
+      </div>
+    </div>
+    <Timeline entries={entries} />
+  </main>
+  <Footer />
+  <Terminal projects={projects} client:idle />
+</Base>

@@ -6,11 +6,11 @@ const { variant = 'hero' } = Astro.props;
   <button
     type="button"
     data-open-terminal
-    class="inline-flex items-center gap-3 rounded-[10px] border border-[var(--color-neutral-800)] bg-[color-mix(in_oklch,var(--color-bg)_84%,black)] px-4 py-3 font-[var(--font-mono)] text-[13px] text-[var(--color-neutral-300)] hover:border-[var(--color-accent)]"
+    class="inline-flex items-center gap-3 rounded-[10px] border border-[var(--color-neutral-800)] bg-[color-mix(in_oklch,var(--color-bg)_84%,black)] px-4 py-3 font-mono text-[13px] text-[var(--color-neutral-300)] hover:border-[var(--color-accent)]"
   >
     <span class="text-[var(--color-accent)]">❯</span>
     <span>poke around in the terminal</span>
-    <kbd class="rounded border border-[var(--color-neutral-800)] px-1.5 py-[3px] font-[var(--font-mono)] text-[11px] text-[var(--color-neutral-600)]">` or ⌘K</kbd>
+    <kbd class="rounded border border-[var(--color-neutral-800)] px-1.5 py-[3px] font-mono text-[11px] text-[var(--color-neutral-600)]">` or ⌘K</kbd>
   </button>
 ) : (
   <button
@@ -19,7 +19,7 @@ const { variant = 'hero' } = Astro.props;
     class="inline-flex items-center gap-2 rounded-lg border border-[var(--color-neutral-800)] py-1.5 pl-3 pr-2.5 text-[13px] text-[var(--color-neutral-400)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent-300)]"
   >
     Terminal
-    <kbd class="hidden md:inline-flex rounded border border-[var(--color-neutral-800)] px-1.5 py-[3px] font-[var(--font-mono)] text-[11px] text-[var(--color-neutral-600)]">`</kbd>
+    <kbd class="hidden md:inline-flex rounded border border-[var(--color-neutral-800)] px-1.5 py-[3px] font-mono text-[11px] text-[var(--color-neutral-600)]">`</kbd>
   </button>
 )}
 
