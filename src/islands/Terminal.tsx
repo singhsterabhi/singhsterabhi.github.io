@@ -48,7 +48,7 @@ export default function Terminal({
       const tag = (e.target as HTMLElement | null)?.tagName?.toLowerCase();
       const typing = tag === 'input' || tag === 'textarea';
       if (!typing && e.key === '`') { e.preventDefault(); openDialog(); }
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); openDialog(); }
+      if (!typing && (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); openDialog(); }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -85,7 +85,10 @@ export default function Terminal({
       if (i >= 0) { setHIdx(i); setInput(hist[i]); }
     } else if (e.key === 'ArrowDown') {
       e.preventDefault();
-      const i = hIdx - 1;
+      // Clamp at -1. Without the floor, one ArrowDown at rest drives hIdx to -2,
+      // and ArrowUp's `if (i >= 0)` guard then blocks every recovery — history
+      // recall stays dead for the rest of the session.
+      const i = Math.max(hIdx - 1, -1);
       setHIdx(i);
       setInput(i >= 0 ? hist[i] : '');
     } else if (e.key === 'Tab') {

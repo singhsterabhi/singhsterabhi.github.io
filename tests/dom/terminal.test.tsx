@@ -86,4 +86,34 @@ describe('Terminal', () => {
     await user.type(screen.getByLabelText('Command'), 'exit{Enter}');
     expect((screen.getByRole('dialog', { hidden: true }) as HTMLDialogElement).open).toBe(false);
   });
+
+  it('survives ArrowDown at rest — the floor must hold', async () => {
+    const user = await open();
+    const input = screen.getByLabelText('Command') as HTMLInputElement;
+    await user.type(input, 'whoami{Enter}');
+    await user.type(input, '{ArrowDown}');
+    await user.type(input, '{ArrowUp}');
+    expect(input.value).toBe('whoami');
+  });
+
+  it('ArrowDown walks back down to an empty prompt', async () => {
+    const user = await open();
+    const input = screen.getByLabelText('Command') as HTMLInputElement;
+    await user.type(input, 'help{Enter}');
+    await user.type(input, 'whoami{Enter}');
+    await user.type(input, '{ArrowUp}{ArrowUp}');
+    expect(input.value).toBe('help');
+    await user.type(input, '{ArrowDown}');
+    expect(input.value).toBe('whoami');
+    await user.type(input, '{ArrowDown}');
+    expect(input.value).toBe('');
+  });
+
+  it('ArrowUp stops at the oldest entry instead of running off the end', async () => {
+    const user = await open();
+    const input = screen.getByLabelText('Command') as HTMLInputElement;
+    await user.type(input, 'help{Enter}');
+    await user.type(input, '{ArrowUp}{ArrowUp}{ArrowUp}');
+    expect(input.value).toBe('help');
+  });
 });
