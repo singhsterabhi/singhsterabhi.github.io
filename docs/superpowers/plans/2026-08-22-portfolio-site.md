@@ -130,7 +130,7 @@ Expected: FAIL — cannot resolve `../astro.config.mjs`.
 `astro.config.mjs` — note `fonts` uses Astro 7's stable Fonts API, which downloads and self-hosts into `_astro/fonts` at build time. `DISPLAY_FACE` is filled in by Task 2; until then Inter stands in for both so the build is green.
 
 ```js
-import { defineConfig } from 'astro/config';
+import { defineConfig, fontProviders } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
@@ -141,7 +141,7 @@ export default defineConfig({
   vite: { plugins: [tailwindcss()] },
   fonts: [
     {
-      provider: 'google',
+      provider: fontProviders.google(),
       name: 'Inter',
       cssVariable: '--font-body',
       weights: ['400', '500', '600'],
@@ -149,7 +149,7 @@ export default defineConfig({
       fallbacks: ['system-ui', 'sans-serif'],
     },
     {
-      provider: 'google',
+      provider: fontProviders.google(),
       name: 'JetBrains Mono',
       cssVariable: '--font-mono',
       weights: ['400', '500'],
@@ -272,7 +272,9 @@ Append to the `fonts` array in `astro.config.mjs`, substituting the chosen famil
 
 ```js
     {
-      provider: 'google',
+      // Astro 7 requires a FontProvider object, NOT the string 'google'.
+      // `fontProviders` is already imported by astro.config.mjs from Task 1.
+      provider: fontProviders.google(),
       name: '<CHOSEN DISPLAY FACE>',
       cssVariable: '--font-heading',
       weights: ['500', '600'],
