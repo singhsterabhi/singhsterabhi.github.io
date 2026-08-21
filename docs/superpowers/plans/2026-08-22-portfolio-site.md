@@ -27,6 +27,9 @@ Every task's requirements implicitly include this section. Values are copied ver
 - **Dead-link rule:** a project card renders only the links it actually has. No card renders a URL that has not been verified resolving. (§6)
 - **No placeholder copy reaches `master`:** specifically not `hello@example.com`, not the notes-to-self timeline entries, not the striped portrait placeholder. (§13)
 - **The design artboard is a reference, not code to port.** No inline `style="…"` attributes in output; no `screens` switcher; no `screen`/`terminalAffordance`/`bentoColumns` props; `support.js` is not ported. (§8)
+- **Horizontal nav rows must wrap, not be tuned.** Any header that is a single flex row of a brand plus several controls has *some* width where it overflows; shaving `gap` values fixes one breakpoint and leaves the next one broken (measured: `gap-4` fixed 375 and left 320 overflowing by 23px). Give such rows `flex-wrap` with a `gap-y`, so the controls drop to a second line instead of overflowing at any width — including widths nobody tested.
+- **Responsive padding rule.** The artboard's `padding-inline: 40px` is a DESKTOP measurement. Every use of the 1120px content column takes `px-5 md:px-10`, never bare `px-10` — verified in a real browser: at 375px, 40px of padding each side leaves 295px, and the header's brand plus four nav items overflow to `scrollWidth` 428 against a 375 viewport. Mobile compatibility is an explicit user requirement, so a bare `px-10` is a defect. The same applies to any `gap-7` in a horizontal nav row: use `gap-4 md:gap-7`.
+- **Viewport verification is not optional and vitest cannot do it.** Before a page task is complete, load the built page in the headless browser at 320 / 375 / 414 / 768 / 1440 and assert `document.body.scrollWidth <= document.documentElement.clientWidth` at every width, plus 280 as a control — a real fix passes at a width nothing real uses, a tuned one does not. Two real mobile defects in Task 10 were invisible to 109 passing tests.
 - **Test placement rule — this is not cosmetic.** Astro's container renderer does **not** work under jsdom (verified on Astro 7.2.4: `renderToString` throws inside `NOOP_MIDDLEWARE_FN`). Therefore: tests that container-render `.astro` components live in **`tests/components/`** and run under **node** with NO environment pragma. Tests that genuinely need a DOM — React islands via `@testing-library/react`, anything touching `document` — live in **`tests/dom/`** and carry `// @vitest-environment jsdom` as their FIRST line. Putting a container-render test in `tests/dom/` with the pragma produces a confusing `NoMatchingRenderer` failure.
 - **Harness:** `vitest.config.ts` uses `getViteConfig` from `astro/config` (plain `defineConfig` cannot resolve `.astro` imports), with a base `environment: 'node'` and per-file pragmas for the DOM suites. `projects` was tried and rejected: each project gets its own Vite config and loses the root Astro plugin. Do not "simplify" this back.
 - **Package manager: pnpm 10.33.2.** Every command in this plan uses pnpm. `pnpm-lock.yaml` is committed — Cloudflare detects the package manager from it. Never run `npm install` in this repo; it would produce a competing `package-lock.json` and a different dependency tree than the one tested.
@@ -2422,7 +2425,7 @@ interface Props { current?: 'home' | 'about' }
 const { current } = Astro.props;
 const link = 'text-sm no-underline hover:text-[var(--color-text)]';
 ---
-<header class="mx-auto flex max-w-[1120px] items-center justify-between gap-6 px-10 py-5.5">
+<header class="mx-auto flex max-w-[1120px] items-center justify-between gap-6 px-5 md:px-10 py-5.5">
   <a href="/" class="font-[var(--font-heading)] text-[15px] font-medium tracking-[-0.01em] text-[var(--color-text)] no-underline">
     abhishek<span class="text-[var(--color-accent)]">.</span>
   </a>
@@ -2446,7 +2449,7 @@ import MotionToggle from './MotionToggle.astro';
 const link = 'text-[13px] text-[var(--color-neutral-500)] no-underline hover:text-[var(--color-text)]';
 ---
 <footer class="border-t border-[var(--color-neutral-900)]">
-  <div class="mx-auto flex max-w-[1120px] flex-wrap items-center justify-between gap-4 px-10 py-7">
+  <div class="mx-auto flex max-w-[1120px] flex-wrap items-center justify-between gap-4 px-5 md:px-10 py-7">
     <span class="font-[var(--font-mono)] text-xs text-[var(--color-neutral-700)]">
       built with astro · deployed on cloudflare
     </span>
@@ -2468,7 +2471,7 @@ import { CONTACT, RESUME_PATH } from '../commands/registry';
 const primary = 'inline-flex items-center gap-2 rounded-lg border border-[var(--color-accent)] px-4.5 py-2.5 text-sm font-medium text-[var(--color-accent-300)] no-underline hover:bg-[color-mix(in_oklch,var(--color-accent)_12%,transparent)]';
 const secondary = 'inline-flex items-center gap-2 rounded-lg border border-[var(--color-neutral-800)] px-4.5 py-2.5 text-sm font-medium text-[var(--color-text)] no-underline hover:border-[var(--color-neutral-700)]';
 ---
-<section class="mx-auto max-w-[1120px] px-10 pb-22 pt-24">
+<section class="mx-auto max-w-[1120px] px-5 md:px-10 pb-22 pt-24">
   <p class="mb-7 font-[var(--font-mono)] text-[11px] font-medium uppercase tracking-[0.16em] text-[var(--color-neutral-600)]">
     Bengaluru · open to talk
   </p>
@@ -2496,7 +2499,7 @@ const { projects } = Astro.props;
 // With two entries — one featured spanning two columns — this fills exactly
 // one row of three, which is why it reads deliberate rather than sparse (§8).
 ---
-<section id="work" class="mx-auto max-w-[1120px] px-10 pb-24">
+<section id="work" class="mx-auto max-w-[1120px] px-5 md:px-10 pb-24">
   <div class="mb-6 flex items-baseline justify-between gap-6">
     <h2 class="font-[var(--font-mono)] text-[13px] font-medium uppercase tracking-[0.16em] text-[var(--color-neutral-600)]">
       Selected work
@@ -2566,7 +2569,7 @@ const jsonLd = {
   <main id="main" class="bg-[radial-gradient(120%_60%_at_12%_0%,color-mix(in_oklch,var(--color-surface)_68%,var(--color-accent-900))_0%,transparent_60%)]">
     <Hero />
     <ProjectGrid projects={projects} />
-    <section class="mx-auto max-w-[1120px] px-10 pb-28">
+    <section class="mx-auto max-w-[1120px] px-5 md:px-10 pb-28">
       <div class="max-w-[56ch]">
         <h2 class="mb-5 font-[var(--font-mono)] text-[13px] font-medium uppercase tracking-[0.16em] text-[var(--color-neutral-600)]">About</h2>
         <p class="mb-5.5 text-[20px] leading-snug text-[var(--color-neutral-300)] text-pretty">
@@ -2717,7 +2720,7 @@ interface Props { entries: Entry[] }
 const { entries } = Astro.props;
 ---
 {entries.length > 0 && (
-  <section class="mx-auto max-w-[1120px] px-10 pb-28 pt-14">
+  <section class="mx-auto max-w-[1120px] px-5 md:px-10 pb-28 pt-14">
     <h2 class="mb-6 font-[var(--font-mono)] text-[13px] font-medium uppercase tracking-[0.16em] text-[var(--color-neutral-600)]">
       Where I've worked
     </h2>
@@ -2780,7 +2783,7 @@ const body = 'mb-5 text-[17px] leading-[1.7] text-[var(--color-neutral-400)] tex
 >
   <Nav current="about" />
   <main id="main">
-    <div class="mx-auto max-w-[1120px] px-10 pb-10 pt-18">
+    <div class="mx-auto max-w-[1120px] px-5 md:px-10 pb-10 pt-18">
       <h1 class="mb-8 max-w-[20ch] font-[var(--font-heading)] text-[clamp(36px,4.6vw,54px)] leading-[1.05] tracking-[-0.03em]">
         A short honest version
       </h1>
