@@ -4,4 +4,3 @@ dist/
 .wrangler/
 *.log
 .DS_Store
-docs/
