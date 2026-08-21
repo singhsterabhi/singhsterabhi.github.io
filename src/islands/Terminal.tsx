@@ -142,6 +142,9 @@ export default function Terminal({
         <div
           ref={scrollRef}
           aria-live="polite"
+          tabIndex={0}
+          role="log"
+          aria-label="Terminal output"
           className="flex-1 overflow-auto px-4.5 py-4 font-mono text-[13.5px] leading-[1.85]"
         >
           {lines.map((l, i) => (

@@ -2002,6 +2002,13 @@ export default function Terminal({
         <div
           ref={scrollRef}
           aria-live="polite"
+          tabIndex={0}
+          role="log"
+          aria-label="Terminal output"
+          // tabIndex is required, not decorative: whitespace-pre removes wrapping,
+          // so wide output (the padEnd-aligned projects table, long URLs) clips
+          // horizontally. Without focus the region is mouse-only, which fails
+          // keyboard reachability on a scrollable area.
           className="flex-1 overflow-auto px-4.5 py-4 font-mono text-[13.5px] leading-[1.85]"
         >
           {lines.map((l, i) => (

@@ -39,6 +39,13 @@ describe('Terminal', () => {
     expect(document.querySelector('[aria-live="polite"]')).not.toBeNull();
   });
 
+  it('lets a keyboard user reach clipped output', async () => {
+    await open();
+    const region = document.querySelector('dialog [aria-live]') as HTMLElement;
+    expect(region).not.toBeNull();
+    expect(region.tabIndex).toBe(0);
+  });
+
   it('gives the command input an accessible name', async () => {
     await open();
     expect(screen.getByLabelText('Command')).toBeTruthy();
