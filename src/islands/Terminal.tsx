@@ -59,12 +59,22 @@ export default function Terminal({
   }, [lines]);
 
   useEffect(() => {
+    // `cancelled` is load-bearing. Without it, an unmount before the dynamic
+    // import resolves runs cleanup while `controller` is still null — the abort
+    // is a no-op, and the controller that arrives afterwards is never aborted.
+    let cancelled = false;
     let controller: AbortController | null = null;
     import('./webmcp').then(({ registerWebMcpTools }) =>
       registerWebMcpTools({ projects, setTheme: (t) => window.__setTheme?.(t) })
-        .then((c) => { controller = c; }),
+        .then((c) => {
+          controller = c;
+          if (cancelled) c?.abort();
+        }),
     );
-    return () => controller?.abort();
+    return () => {
+      cancelled = true;
+      controller?.abort();
+    };
   }, [projects]);
 
   const submit = (raw: string) => {

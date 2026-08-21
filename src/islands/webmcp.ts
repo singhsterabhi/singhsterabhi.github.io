@@ -26,10 +26,23 @@ export async function registerWebMcpTools(
           description: c.description,
           inputSchema: c.inputSchema,
           annotations: { readOnlyHint: c.readOnly },
+          // Deliberate divergence from the human terminal: the WebMCP path
+          // returns the destination URL and does NOT navigate. Navigating from
+          // inside a tool call tears down the page along with the pending result
+          // and the tool surface itself; the agent navigates if it wants to.
           execute: async (params: Record<string, string>) => {
             const positional = params?.target ?? params?.mode ?? '';
             const result = runLine(`${c.name} ${positional}`.trim(), ctx);
-            return result.lines.map((l) => l.text).join('\n').trim();
+            const text = result.lines
+              .filter((l) => l.tone !== 'cmd')
+              .map((l) => l.text)
+              .join('\n')
+              .trim();
+            if (!text) {
+              if (result.clear) return 'Terminal output cleared.';
+              if (result.close) return 'Terminal closed.';
+            }
+            return text;
           },
         },
         { signal: controller.signal },

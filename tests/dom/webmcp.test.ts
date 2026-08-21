@@ -63,4 +63,28 @@ describe('registerWebMcpTools', () => {
   it('no-ops without throwing when the browser has no WebMCP support', async () => {
     expect(await registerWebMcpTools(ctx(), {} as any)).toBeNull();
   });
+
+  it('strips the prompt echo from agent output', async () => {
+    await registerWebMcpTools(ctx(), target);
+    const whoami = registerTool.mock.calls.find((c) => c[0].name === 'whoami')![0];
+    const out = String(await whoami.execute({}, { signal: new AbortController().signal }));
+    expect(out).not.toContain('❯');
+    expect(out).toMatch(/full-stack developer/i);
+  });
+
+  it('open returns the destination URL and does not navigate', async () => {
+    await registerWebMcpTools(ctx(), target);
+    const open = registerTool.mock.calls.find((c) => c[0].name === 'open')![0];
+    const out = String(await open.execute({ target: 'gym-log' }, { signal: new AbortController().signal }));
+    expect(out).toContain('https://');
+  });
+
+  it('clear and exit return a signal rather than an empty string', async () => {
+    await registerWebMcpTools(ctx(), target);
+    for (const name of ['clear', 'exit']) {
+      const tool = registerTool.mock.calls.find((c) => c[0].name === name)![0];
+      const out = String(await tool.execute({}, { signal: new AbortController().signal }));
+      expect(out.length, name).toBeGreaterThan(0);
+    }
+  });
 });
