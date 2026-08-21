@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { COMMANDS, runLine, type CommandCtx } from '../../src/commands/registry';
+import { COMMANDS, nearest, runLine, type CommandCtx } from '../../src/commands/registry';
 
 const projects = [
   { slug: 'table-kit', title: 'A headless table toolkit', repo: 'https://x/tk', demo: undefined },
@@ -110,5 +110,35 @@ describe('runLine', () => {
 
   it('treats an empty line as a no-op with just the prompt echo', () => {
     expect(runLine('   ', ctx()).lines).toHaveLength(1);
+  });
+
+  it('reports a project with no public link instead of navigating nowhere', () => {
+    const ctx = () => ({
+      projects: [{ slug: 'bare', title: 'A project with no links yet' }] as any,
+      setTheme: vi.fn(),
+    });
+    const r = runLine('open bare', ctx());
+    expect(r.navigate).toBeUndefined();
+    expect(r.lines.map((l) => l.text).join('\n')).toMatch(/no public link/i);
+  });
+});
+
+describe('nearest', () => {
+  it('matches a real prefix', () => {
+    expect(nearest('proj', COMMANDS.map((c) => c.name))).toBe('projects');
+  });
+
+  it('forgives missing punctuation — the reason the fuzzy branch exists', () => {
+    expect(nearest('gymlog', ['table-kit', 'gym-log'])).toBe('gym-log');
+  });
+
+  it('does NOT invent a suggestion from an unanchored substring', () => {
+    expect(nearest('x', COMMANDS.map((c) => c.name))).toBeUndefined();
+    expect(nearest('am', COMMANDS.map((c) => c.name))).toBeUndefined();
+    expect(nearest('a', ['table-kit', 'gym-log'])).toBeUndefined();
+  });
+
+  it('returns nothing for genuinely unknown input', () => {
+    expect(nearest('xyzzy', COMMANDS.map((c) => c.name))).toBeUndefined();
   });
 });

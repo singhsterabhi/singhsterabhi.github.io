@@ -167,7 +167,8 @@ export function nearest(input: string, candidates: string[]): string | undefined
   const exactPrefix = candidates.find((c) => c.startsWith(input));
   if (exactPrefix) return exactPrefix;
   const stripped = input.replace(/[^a-z0-9]/g, '');
-  return candidates.find((c) => c.replace(/[^a-z0-9]/g, '').startsWith(stripped) || c.includes(stripped));
+  if (!stripped) return undefined;
+  return candidates.find((c) => c.replace(/[^a-z0-9]/g, '').startsWith(stripped));
 }
 
 const POSITIONAL: Record<string, string> = { open: 'target', theme: 'mode' };
