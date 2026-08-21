@@ -162,6 +162,13 @@ one entry; both surfaces update. Nothing to drift.
 with no working demo shows the repo link alone rather than a broken button.
 Broken demos are an instant credibility killer.
 
+**The rule is not limited to project cards.** It applies to every outbound link
+whose target is an outstanding input, including the hero's Résumé CTA: the
+button is rendered only when `public/abhishek-singh.pdf` actually exists, so it
+appears automatically when the file is supplied and never points at a 404 before
+then. A link to a promised-but-absent file is the same defect as a dead demo,
+and the hero is a worse place for it than a card.
+
 ## 7. Information architecture
 
 ### Home (`/`)

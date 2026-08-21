@@ -36,6 +36,12 @@ describe('ProjectCard — the dead-link rule (§6)', () => {
     expect(html).toContain('Live demo');
   });
 
+  it('renders only the demo button when there is no repo', async () => {
+    const html = await render({ ...base, demo: 'https://gl.app' });
+    expect(html).toContain('Live demo');
+    expect(html).not.toContain('Repo');
+  });
+
   it('shows the featured pill only when featured', async () => {
     expect(await render(base)).toContain('featured');
     expect(await render({ ...base, featured: false })).not.toContain('featured');
