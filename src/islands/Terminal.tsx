@@ -58,6 +58,15 @@ export default function Terminal({
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [lines]);
 
+  useEffect(() => {
+    let controller: AbortController | null = null;
+    import('./webmcp').then(({ registerWebMcpTools }) =>
+      registerWebMcpTools({ projects, setTheme: (t) => window.__setTheme?.(t) })
+        .then((c) => { controller = c; }),
+    );
+    return () => controller?.abort();
+  }, [projects]);
+
   const submit = (raw: string) => {
     const result = runLine(raw, {
       projects,
