@@ -812,6 +812,59 @@ Both toggles are plain HTML buttons with a tiny inline script — no framework, 
 </script>
 ```
 
+- [ ] **Step 5b: Write the toggle markup test**
+
+The behaviour of these toggles lives in an inline `<script>`, which the container
+API does not execute — so a behavioural test here would be testing a fake
+harness, not the code. Their *markup contract* is testable and is what actually
+breaks silently: an icon-only button with no accessible name is invisible to a
+screen reader, and `◑` is not a name.
+
+`tests/dom/toggles.test.ts`:
+```ts
+import { experimental_AstroContainer as AstroContainer } from 'astro/container';
+import { describe, expect, it } from 'vitest';
+import ThemeToggle from '../../src/components/ThemeToggle.astro';
+import MotionToggle from '../../src/components/MotionToggle.astro';
+
+const render = async (C: any) => (await AstroContainer.create()).renderToString(C, {});
+
+describe('ThemeToggle', () => {
+  it('is a real button, so it is keyboard reachable without extra work', async () => {
+    const html = await render(ThemeToggle);
+    expect(html).toMatch(/<button[^>]*type="button"/);
+  });
+
+  it('carries an accessible name — the glyph alone is not one', async () => {
+    const html = await render(ThemeToggle);
+    expect(html).toMatch(/aria-label="[^"]{6,}"/);
+  });
+
+  it('has a stable id for the inline script to bind to', async () => {
+    expect(await render(ThemeToggle)).toContain('id="theme-toggle"');
+  });
+});
+
+describe('MotionToggle', () => {
+  it('is a real button', async () => {
+    expect(await render(MotionToggle)).toMatch(/<button[^>]*type="button"/);
+  });
+
+  it('has a stable id for the inline script to bind to', async () => {
+    expect(await render(MotionToggle)).toContain('id="motion-toggle"');
+  });
+});
+```
+
+Run: `pnpm vitest run tests/dom/toggles.test.ts`
+Expected: 5 PASS. If the accessible-name assertion fails on `MotionToggle`, note
+that its label is set by the inline script at runtime — the static markup must
+still carry a sensible fallback, so add one rather than relaxing the test.
+
+Behavioural verification of both toggles (that clicking actually flips
+`data-theme` / `data-motion` and persists) is Task 18 Steps 4 and 5, which drive
+a real browser.
+
 - [ ] **Step 6: Add the reduced-motion CSS path**
 
 Append to `src/styles/global.css`. Note this substitutes opacity for movement rather than deleting the animation — the spec is explicit that a deleted animation leaving a broken layout is not acceptable.
