@@ -1,0 +1,19 @@
+- id: table-kit
+  slug: table-kit
+  kicker: open source
+  title: A headless table toolkit built on TanStack Table
+  summary: >-
+    Column sizing, pinning and virtualised rows packaged once, so I stopped
+    rewriting the same four hooks in every project.
+  tags: [TypeScript, React, TanStack Table]
+  featured: true
+
+- id: gym-log
+  slug: gym-log
+  kicker: side project
+  title: A workout tracker that fits between sets
+  summary: >-
+    Log a set in two taps. Offline-first, because gym wifi is a myth and nobody
+    wants a spinner mid-superset.
+  tags: [React, IndexedDB, PWA]
+  featured: false
