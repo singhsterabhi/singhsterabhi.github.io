@@ -1036,6 +1036,33 @@ const { title, description, canonical, markdownUrl, jsonLd } = Astro.props;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- FIRST in <head>, before anything that can paint. Astro inlines small
+         stylesheets as <style>, and <Font> emits @font-face <style> blocks, so
+         "before the stylesheet link" is not a strong enough position — being
+         first is. Blocking and inline by design: it must run before first paint
+         or every dark-theme visitor sees a white flash on every navigation. -->
+    <script is:inline>
+      (function () {
+        try {
+          var s = localStorage.getItem('theme');
+          var t = (s === 'light' || s === 'dark')
+            ? s
+            : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', t);
+
+          var m = localStorage.getItem('motion');
+          var mo = (m === 'full' || m === 'reduced')
+            ? m
+            : (matchMedia('(prefers-reduced-motion: reduce)').matches ? 'reduced' : 'full');
+          document.documentElement.setAttribute('data-motion', mo);
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'light');
+          document.documentElement.setAttribute('data-motion', 'full');
+        }
+      })();
+    </script>
+
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
@@ -2570,6 +2597,13 @@ import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const pages = ['dist/index.html', 'dist/about/index.html'];
+
+// HTML comments survive into built output and routinely contain tag names in
+// prose — including this project's own explanation of why the theme script is
+// first. Scanning raw text without stripping them measures the comment, not the
+// markup. Same defect class as the CSS comment stripping in tests/tokens.test.ts.
+const headOf = (path: string) =>
+  readFileSync(path, 'utf8').split('</head>')[0].replace(/<!--[\s\S]*?-->/g, '');
 
 describe('no-flash guard (inherited from Task 5)', () => {
   for (const path of pages) {

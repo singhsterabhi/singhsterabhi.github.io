@@ -1,0 +1,19 @@
+---
+import ProjectCard from './ProjectCard.astro';
+interface Props { projects: any[] }
+const { projects } = Astro.props;
+// With two entries — one featured spanning two columns — this fills exactly
+// one row of three, which is why it reads deliberate rather than sparse (§8).
+---
+<section id="work" class="mx-auto max-w-[1120px] px-10 pb-24">
+  <div class="mb-6 flex items-baseline justify-between gap-6">
+    <h2 class="font-[var(--font-mono)] text-[13px] font-medium uppercase tracking-[0.16em] text-[var(--color-neutral-600)]">
+      Selected work
+    </h2>
+    <span class="text-[13px] text-[var(--color-neutral-700)]">two things I actually finished</span>
+  </div>
+  <div class="hr mb-8"></div>
+  <div class="grid gap-5 md:grid-cols-3">
+    {projects.map((p) => <ProjectCard project={p} />)}
+  </div>
+</section>

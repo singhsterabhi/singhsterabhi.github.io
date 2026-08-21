@@ -1,6 +1,65 @@
 ---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+import Hero from '../components/Hero.astro';
+import ProjectGrid from '../components/ProjectGrid.astro';
+import Footer from '../components/Footer.astro';
+import Terminal from '../islands/Terminal';
+import { CONTACT } from '../commands/registry';
+
+const entries = await getCollection('projects');
+const projects = entries
+  .map((e) => e.data)
+  .sort((a, b) => Number(b.featured) - Number(a.featured));
+
+const site = Astro.site!.href;
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': site + '#person',
+      name: 'Abhishek Singh',
+      jobTitle: 'Full-stack developer',
+      description: 'Full-stack developer — I build interfaces people enjoy and APIs that hold up at scale.',
+      url: site,
+      email: 'mailto:' + CONTACT.email,
+      sameAs: [CONTACT.github, CONTACT.linkedin],
+      address: { '@type': 'PostalAddress', addressLocality: 'Bengaluru', addressCountry: 'IN' },
+    },
+    { '@type': 'WebSite', '@id': site + '#website', url: site, name: 'Abhishek Singh', publisher: { '@id': site + '#person' } },
+    {
+      '@type': 'ProfilePage',
+      '@id': site + '#profilepage',
+      isPartOf: { '@id': site + '#website' },
+      mainEntity: { '@id': site + '#person' },
+      speakable: { '@type': 'SpeakableSpecification', cssSelector: ['h1', '.positioning'] },
+    },
+  ],
+};
 ---
-<html lang="en">
-  <head><meta charset="utf-8" /><title>Abhishek Singh</title></head>
-  <body><h1>Abhishek Singh</h1></body>
-</html>
+<Base
+  title="Abhishek Singh — full-stack developer"
+  description="Full-stack developer — I build interfaces people enjoy and APIs that hold up at scale."
+  canonical={site}
+  markdownUrl={site + 'index.md'}
+  jsonLd={jsonLd}
+>
+  <Nav current="home" />
+  <main id="main" class="bg-[radial-gradient(120%_60%_at_12%_0%,color-mix(in_oklch,var(--color-surface)_68%,var(--color-accent-900))_0%,transparent_60%)]">
+    <Hero />
+    <ProjectGrid projects={projects} />
+    <section class="mx-auto max-w-[1120px] px-10 pb-28">
+      <div class="max-w-[56ch]">
+        <h2 class="mb-5 font-[var(--font-mono)] text-[13px] font-medium uppercase tracking-[0.16em] text-[var(--color-neutral-600)]">About</h2>
+        <p class="mb-5.5 text-[20px] leading-snug text-[var(--color-neutral-300)] text-pretty">
+          Grew up in Gorakhpur, currently a bit of a nomad. I care about the boring parts — cold starts, empty states, the third click — and I like the kind of work where the fix is small and the difference is obvious.
+        </p>
+        <a href="/about" class="border-b border-[var(--color-accent-800)] text-[15px] text-[var(--color-accent-300)] no-underline hover:border-[var(--color-accent)]">More about me →</a>
+      </div>
+    </section>
+  </main>
+  <Footer />
+  <Terminal projects={projects} client:idle />
+</Base>

@@ -18,23 +18,12 @@ const { title, description, canonical, markdownUrl, jsonLd } = Astro.props;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
-    <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
-    <link rel="sitemap" href="/sitemap-index.xml" />
-    <!-- Agent-facing alternates (§11) -->
-    <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
-    {markdownUrl && <link rel="alternate" type="text/markdown" href={markdownUrl} />}
 
-    <Font cssVariable="--font-body" preload />
-    <Font cssVariable="--font-mono" preload />
-
-    <!-- Blocking, inline, first: applies theme and motion before first paint.
-         Duplicated from src/lib/* deliberately — it must run before any module
-         graph loads, so it cannot import. Keep in sync with those files.
-         Uses setAttribute (not the .dataset shorthand used elsewhere) so the
-         literal "data-theme"/"data-motion" strings are present in this
-         unexecuted script source, which is what the no-flash test inspects. -->
+    <!-- FIRST in <head>, before anything that can paint. Astro inlines small
+         stylesheets as <style>, and <Font> emits @font-face <style> blocks, so
+         "before the stylesheet link" is not a strong enough position — being
+         first is. Blocking and inline by design: it must run before first paint
+         or every dark-theme visitor sees a white flash on every navigation. -->
     <script is:inline>
       (function () {
         try {
@@ -55,6 +44,17 @@ const { title, description, canonical, markdownUrl, jsonLd } = Astro.props;
         }
       })();
     </script>
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <!-- Agent-facing alternates (§11) -->
+    <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
+    {markdownUrl && <link rel="alternate" type="text/markdown" href={markdownUrl} />}
+
+    <Font cssVariable="--font-body" preload />
+    <Font cssVariable="--font-mono" preload />
 
     {jsonLd && <JsonLd data={jsonLd} />}
     <slot name="head" />

@@ -1,0 +1,22 @@
+---
+import TerminalButton from './TerminalButton.astro';
+import ThemeToggle from './ThemeToggle.astro';
+interface Props { current?: 'home' | 'about' }
+const { current } = Astro.props;
+const link = 'text-sm no-underline hover:text-[var(--color-text)]';
+---
+<header class="mx-auto flex max-w-[1120px] items-center justify-between gap-6 px-10 py-5.5">
+  <a href="/" class="font-[var(--font-heading)] text-[15px] font-medium tracking-[-0.01em] text-[var(--color-text)] no-underline">
+    abhishek<span class="text-[var(--color-accent)]">.</span>
+  </a>
+  <nav class="flex items-center gap-7" aria-label="Main">
+    <a href="/#work" class={`${link} text-[var(--color-neutral-400)]`}>Work</a>
+    <a href="/about"
+       aria-current={current === 'about' ? 'page' : undefined}
+       class={current === 'about'
+         ? `${link} border-b border-[var(--color-accent)] pb-0.5 text-[var(--color-text)]`
+         : `${link} text-[var(--color-neutral-400)]`}>About</a>
+    <TerminalButton variant="nav" />
+    <ThemeToggle />
+  </nav>
+</header>

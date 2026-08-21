@@ -1,0 +1,23 @@
+---
+import TerminalButton from './TerminalButton.astro';
+import { CONTACT, RESUME_PATH } from '../commands/registry';
+const primary = 'inline-flex items-center gap-2 rounded-lg border border-[var(--color-accent)] px-4.5 py-2.5 text-sm font-medium text-[var(--color-accent-300)] no-underline hover:bg-[color-mix(in_oklch,var(--color-accent)_12%,transparent)]';
+const secondary = 'inline-flex items-center gap-2 rounded-lg border border-[var(--color-neutral-800)] px-4.5 py-2.5 text-sm font-medium text-[var(--color-text)] no-underline hover:border-[var(--color-neutral-700)]';
+---
+<section class="mx-auto max-w-[1120px] px-10 pb-22 pt-24">
+  <p class="mb-7 font-[var(--font-mono)] text-[11px] font-medium uppercase tracking-[0.16em] text-[var(--color-neutral-600)]">
+    Bengaluru · open to talk
+  </p>
+  <h1 class="mb-6 max-w-[16ch] font-[var(--font-heading)] text-[clamp(44px,6.4vw,76px)] leading-[1.02] tracking-[-0.03em]">
+    Abhishek Singh
+  </h1>
+  <p class="mb-10 max-w-[34ch] text-[21px] leading-normal text-[var(--color-neutral-300)] text-pretty">
+    Full-stack developer — I build interfaces people enjoy and APIs that hold up at scale.
+  </p>
+  <div class="mb-10 flex flex-wrap gap-2.5">
+    <a class={primary} href={RESUME_PATH}>Résumé PDF</a>
+    <a class={secondary} href={`mailto:${CONTACT.email}`}>Email</a>
+    <a class={secondary} href={CONTACT.github} rel="noopener noreferrer">GitHub</a>
+  </div>
+  <TerminalButton variant="hero" />
+</section>
