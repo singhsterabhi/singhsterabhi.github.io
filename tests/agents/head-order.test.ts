@@ -2,7 +2,14 @@ import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 // Task 11 built the About page, so both routes are checked.
-const pages = ['dist/index.html', 'dist/about/index.html'];
+// Task 12 added /terminal, which also renders through Base.astro, so the
+// no-flash invariant applies to it too.
+const pages = [
+  'dist/index.html',
+  'dist/about/index.html',
+  'dist/terminal/index.html',
+  'dist/404.html',
+];
 
 const headOf = (path: string) =>
   readFileSync(path, 'utf8')

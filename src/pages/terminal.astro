@@ -1,0 +1,27 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+import Hero from '../components/Hero.astro';
+import ProjectGrid from '../components/ProjectGrid.astro';
+import Footer from '../components/Footer.astro';
+import Terminal from '../islands/Terminal';
+
+const projects = (await getCollection('projects'))
+  .map((e) => e.data)
+  .sort((a, b) => Number(b.featured) - Number(a.featured));
+const site = Astro.site!.href;
+---
+<Base
+  title="Terminal — Abhishek Singh"
+  description="A command-line view of Abhishek Singh's portfolio. The same commands agents get through WebMCP."
+  canonical={site + 'terminal'}
+>
+  <Nav current="home" />
+  <main id="main">
+    <Hero />
+    <ProjectGrid projects={projects} />
+  </main>
+  <Footer />
+  <Terminal projects={projects} openOnMount client:load />
+</Base>

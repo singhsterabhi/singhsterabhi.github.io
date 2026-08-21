@@ -1,0 +1,34 @@
+---
+import Base from '../layouts/Base.astro';
+import Terminal from '../islands/Terminal';
+import { getCollection } from 'astro:content';
+const projects = (await getCollection('projects')).map((e) => e.data);
+const site = Astro.site!.href;
+const primary = 'inline-flex items-center rounded-lg border border-[var(--color-accent)] px-4.5 py-2.5 text-sm font-medium text-[var(--color-accent-300)] no-underline hover:bg-[color-mix(in_oklch,var(--color-accent)_12%,transparent)]';
+const secondary = 'inline-flex items-center rounded-lg border border-[var(--color-neutral-800)] px-4.5 py-2.5 text-sm font-medium text-[var(--color-text)] no-underline hover:border-[var(--color-neutral-700)]';
+---
+<Base title="Nothing here — Abhishek Singh" description="Page not found." canonical={site}>
+  <meta name="robots" content="noindex" slot="head" />
+  <main id="main" class="grid min-h-screen place-items-center bg-[radial-gradient(90%_50%_at_20%_10%,color-mix(in_oklch,var(--color-surface)_68%,var(--color-accent-900))_0%,transparent_60%)]">
+    <div class="max-w-[640px] p-10">
+      <p class="mb-6 font-mono text-[11px] font-medium uppercase tracking-[0.16em] text-[var(--color-neutral-600)]">
+        HTTP 404 · genuinely, not a soft one
+      </p>
+      <h1 class="mb-6 font-heading text-[clamp(48px,7vw,84px)] leading-none tracking-[-0.035em]">
+        Nothing here.
+      </h1>
+      <p class="mb-3 max-w-[44ch] text-[19px] leading-relaxed text-[var(--color-neutral-300)] text-pretty">
+        Either I moved it, or you typed it hopefully. Both are fair.
+      </p>
+      <p class="mb-8 font-mono text-[13px] leading-[1.9] text-[var(--color-neutral-600)]">
+        tried: <span class="text-[var(--color-neutral-400)]">/the-page-you-wanted</span><br />
+        found: <span class="text-[var(--color-neutral-400)]">nothing, with a straight face</span>
+      </p>
+      <div class="flex flex-wrap gap-2.5">
+        <a class={primary} href="/">Home</a>
+        <a class={secondary} href="/about">About</a>
+      </div>
+    </div>
+  </main>
+  <Terminal projects={projects} client:idle />
+</Base>

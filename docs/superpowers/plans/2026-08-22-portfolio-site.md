@@ -2610,7 +2610,15 @@ Append to `tests/agents/404.test.ts`'s sibling — create `tests/agents/head-ord
 import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-const pages = ['dist/index.html', 'dist/about/index.html'];
+// Every route rendered through Base.astro belongs here. The no-flash invariant
+// is not page-specific, and a 404 is reached by accident — the worst moment for
+// a white flash.
+const pages = [
+  'dist/index.html',
+  'dist/about/index.html',
+  'dist/terminal/index.html',
+  'dist/404.html',
+];
 
 // HTML comments survive into built output and routinely contain tag names in
 // prose — including this project's own explanation of why the theme script is
