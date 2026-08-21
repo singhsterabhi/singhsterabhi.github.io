@@ -28,7 +28,9 @@ Every task's requirements implicitly include this section. Values are copied ver
 - **No placeholder copy reaches `master`:** specifically not `hello@example.com`, not the notes-to-self timeline entries, not the striped portrait placeholder. (§13)
 - **The design artboard is a reference, not code to port.** No inline `style="…"` attributes in output; no `screens` switcher; no `screen`/`terminalAffordance`/`bentoColumns` props; `support.js` is not ported. (§8)
 - **Package manager: pnpm 10.33.2.** Every command in this plan uses pnpm. `pnpm-lock.yaml` is committed — Cloudflare detects the package manager from it. Never run `npm install` in this repo; it would produce a competing `package-lock.json` and a different dependency tree than the one tested.
-- **Commit discipline:** commits ARE authorized for this execution run — one commit per task on the `feat/portfolio-site` branch. **Commit messages must contain no `Co-Authored-By` trailer, no `Generated with` line, and no signature of any kind** — the user asked for this explicitly. Use a plain conventional-commit subject naming the task. Pushing, merging, and tagging are NOT authorized: ask first.
+- **Commit discipline — IMPLEMENTERS MUST NEVER COMMIT.** Do not run `git commit`, `git commit --amend`, or any command that creates a commit. Stage your work with `git add -A`, report, and stop. The controller commits in the main conversation, where the user sees each permission decision. **If any git command of yours is denied, that denial is final — report it as a concern and stop. Never re-run a denied command.** Retrying a denied call until it succeeds is a permission bypass and is treated as a task failure regardless of the outcome.
+- Commit messages (written by the controller) carry no `Co-Authored-By` trailer, no `Generated with` line, and no signature of any kind — the user asked for this explicitly.
+- Pushing, merging, and tagging are NOT authorized for anyone, controller included: ask the user first.
 
 ---
 
@@ -237,8 +239,9 @@ Expected: `clean` — zero matches. If any match appears, the Fonts API is not b
 
 ```bash
 git add -A
-git commit -m "chore: scaffold astro project with pnpm, vitest and self-hosted fonts"
 ```
+
+Do NOT commit. Report that the work is staged; the controller commits.
 
 ---
 
@@ -288,12 +291,13 @@ Append to the `fonts` array in `astro.config.mjs`, substituting the chosen famil
 Run: `pnpm build && pnpm vitest run tests/config.test.ts`
 Expected: build succeeds, config tests still pass, three font families now in `dist/_astro/fonts/`.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 6: Stage and stop**
 
 ```bash
 git add -A
-git commit -m "<conventional-commit subject naming this task>"
 ```
+
+Do NOT commit. Report that the work is staged; the controller commits.
 
 ---
 
@@ -520,12 +524,13 @@ h1, h2, h3, h4, h5, h6 {
 Run: `pnpm vitest run tests/tokens.test.ts`
 Expected: all 7 PASS. If a contrast assertion fails, **change the token value, not the assertion** — a failing contrast test means the palette is wrong, which is exactly what it is there to catch.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 6: Stage and stop**
 
 ```bash
 git add -A
-git commit -m "<conventional-commit subject naming this task>"
 ```
+
+Do NOT commit. Report that the work is staged; the controller commits.
 
 ---
 
@@ -752,8 +757,9 @@ Expected: tests PASS, build succeeds.
 
 ```bash
 git add -A
-git commit -m "<conventional-commit subject naming this task>"
 ```
+
+Do NOT commit. Report that the work is staged; the controller commits.
 
 ---
 
@@ -927,12 +933,13 @@ const { data } = Astro.props;
 Run: `pnpm vitest run tests/dom/base-layout.test.ts`
 Expected: 6 PASS.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Stage and stop**
 
 ```bash
 git add -A
-git commit -m "<conventional-commit subject naming this task>"
 ```
+
+Do NOT commit. Report that the work is staged; the controller commits.
 
 ---
 
@@ -1110,12 +1117,13 @@ export const collections = {
 Run: `pnpm vitest run tests/content.test.ts && pnpm build`
 Expected: 8 PASS; build succeeds with both collections validating.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 6: Stage and stop**
 
 ```bash
 git add -A
-git commit -m "<conventional-commit subject naming this task>"
 ```
+
+Do NOT commit. Report that the work is staged; the controller commits.
 
 ---
 
@@ -1867,12 +1875,13 @@ const { variant = 'hero' } = Astro.props;
 Run: `pnpm vitest run tests/dom/terminal.test.tsx`
 Expected: 9 PASS.
 
-- [ ] **Step 7: Commit**
+- [ ] **Step 7: Stage and stop**
 
 ```bash
 git add -A
-git commit -m "<conventional-commit subject naming this task>"
 ```
+
+Do NOT commit. Report that the work is staged; the controller commits.
 
 ---
 
@@ -2371,12 +2380,13 @@ node -e "const h=require('fs').readFileSync('dist/index.html','utf8');const m=h.
 ```
 Expected: build succeeds. The terminal island is `client:idle`, so exactly one hydration script is present and it is code-split — the page content itself renders without it, which Task 17 verifies with JS disabled.
 
-- [ ] **Step 8: Commit**
+- [ ] **Step 8: Stage and stop**
 
 ```bash
 git add -A
-git commit -m "<conventional-commit subject naming this task>"
 ```
+
+Do NOT commit. Report that the work is staged; the controller commits.
 
 ---
 
@@ -2967,12 +2977,13 @@ Replace the hard-coded strings in `src/pages/index.astro` (the about teaser, the
 Run: `pnpm vitest run && pnpm build`
 Expected: all suites PASS. `dist/llms.txt` and `dist/llms-full.txt` exist and contain both project slugs.
 
-- [ ] **Step 8: Commit**
+- [ ] **Step 8: Stage and stop**
 
 ```bash
 git add -A
-git commit -m "<conventional-commit subject naming this task>"
 ```
+
+Do NOT commit. Report that the work is staged; the controller commits.
 
 ---
 
@@ -3212,12 +3223,13 @@ ls dist/index.md dist/about.md dist/.well-known/agent-card.json dist/llms.txt di
 ```
 Expected: all suites PASS and all six files present. **If `dist/.well-known/` is missing**, Astro is treating the dot-directory as hidden — move the route to `src/pages/well-known/agent-card.json.ts` and add a `_headers` rewrite, then re-verify.
 
-- [ ] **Step 8: Commit**
+- [ ] **Step 8: Stage and stop**
 
 ```bash
 git add -A
-git commit -m "<conventional-commit subject naming this task>"
 ```
+
+Do NOT commit. Report that the work is staged; the controller commits.
 
 ---
 
@@ -3311,12 +3323,13 @@ Add `class="... reveal"` to the `<article>` in `ProjectCard.astro` and to the `<
 Run: `pnpm vitest run tests/motion.test.ts && pnpm build`
 Expected: 4 PASS; build succeeds.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 6: Stage and stop**
 
 ```bash
 git add -A
-git commit -m "<conventional-commit subject naming this task>"
 ```
+
+Do NOT commit. Report that the work is staged; the controller commits.
 
 ---
 
@@ -3467,12 +3480,13 @@ pnpm add -D yaml
 Run: `pnpm audit:placeholders && pnpm verify:links`
 Expected: `verify:links` reports "no project URLs declared yet" (URLs are still an open §13 input). `audit:placeholders` **will fail** if the Task 3 token values or the Task 2 display face were left as `<...>` markers — that is the script working correctly. Fix any real hit; do not weaken the patterns.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 6: Stage and stop**
 
 ```bash
 git add -A
-git commit -m "<conventional-commit subject naming this task>"
 ```
+
+Do NOT commit. Report that the work is staged; the controller commits.
 
 ---
 
