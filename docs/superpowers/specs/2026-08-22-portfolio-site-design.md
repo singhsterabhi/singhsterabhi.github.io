@@ -496,6 +496,18 @@ from scoring. Nothing is built to satisfy them.
 Not applicable. No authentication surface and no payment surface exist, and
 none is invented to score points.
 
+### Dependency direction: content is a leaf
+
+`src/lib/site-content.ts` holds the site's prose **and** its contact details and
+résumé path, and imports nothing from the command registry. The registry is a
+*consumer* of content, not a source of it — it imports `POSITIONING`, `CONTACT`
+and `RESUME_PATH` from the content module. The inverse direction creates a cycle
+and, worse, invites a second copy of the positioning claim to live in the
+terminal's `whoami` output where nothing keeps it in sync.
+
+Neither constant is re-exported from the registry. A convenience re-export leaves
+two import paths for one constant, which is how the next drift starts.
+
 ### Ordering must match the human pages
 
 Any list the agent surface emits uses the **same sort as the human-facing page**.

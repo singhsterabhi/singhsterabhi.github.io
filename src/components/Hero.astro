@@ -1,8 +1,7 @@
 ---
 import { existsSync } from 'node:fs';
 import TerminalButton from './TerminalButton.astro';
-import { CONTACT, RESUME_PATH } from '../commands/registry';
-import { POSITIONING } from '../lib/site-content';
+import { CONTACT, POSITIONING, RESUME_PATH } from '../lib/site-content';
 
 // Same dead-link rule the project cards follow (spec §6): never render a link
 // to something that is not there. The résumé PDF is an outstanding user input,

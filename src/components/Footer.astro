@@ -1,5 +1,6 @@
 ---
 import MotionToggle from './MotionToggle.astro';
+import { CONTACT } from '../lib/site-content';
 const link = 'text-[13px] text-[var(--color-neutral-500)] no-underline hover:text-[var(--color-text)]';
 ---
 <footer class="border-t border-[var(--color-neutral-900)]">
@@ -8,8 +9,8 @@ const link = 'text-[13px] text-[var(--color-neutral-500)] no-underline hover:tex
       built with astro · deployed on cloudflare
     </span>
     <div class="flex items-center gap-5">
-      <a class={link} href="https://github.com/singhsterabhi" rel="noopener noreferrer">GitHub</a>
-      <a class={link} href="https://linkedin.com/in/singhsterabhi" rel="noopener noreferrer">LinkedIn</a>
+      <a class={link} href={CONTACT.github} rel="noopener noreferrer">GitHub</a>
+      <a class={link} href={CONTACT.linkedin} rel="noopener noreferrer">LinkedIn</a>
       <a class={link} href="/llms.txt">llms.txt</a>
       <MotionToggle />
     </div>

@@ -91,3 +91,18 @@ describe('buildLlmsFullTxt', () => {
     expect(full.length).toBeGreaterThan(buildLlmsTxt(projects as any).length);
   });
 });
+
+describe('no-links branch', () => {
+  it('handles a project with no links at all — the case both real projects hit today', () => {
+    const bare = [{ slug: 'bare', kicker: 'side project', title: 'A thing', summary: 'Does a thing.', tags: ['TS'], featured: false }];
+    const short = buildLlmsTxt(bare as any);
+    const full = buildLlmsFullTxt(bare as any);
+    for (const txt of [short, full]) {
+      expect(txt).toContain('bare');
+      expect(txt).not.toContain('undefined');
+      expect(txt).not.toMatch(/repo:\s*$/m);
+      expect(txt).not.toMatch(/demo:\s*$/m);
+    }
+    expect(full).toContain('none published yet');
+  });
+});

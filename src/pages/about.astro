@@ -6,8 +6,7 @@ import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import Timeline from '../components/Timeline.astro';
 import Terminal from '../islands/Terminal';
-import { CONTACT, RESUME_PATH } from '../commands/registry';
-import { ABOUT_PARAGRAPHS } from '../lib/site-content';
+import { ABOUT_PARAGRAPHS, CONTACT, RESUME_PATH } from '../lib/site-content';
 
 const entries = (await getCollection('timeline')).map((e) => e.data);
 const projects = (await getCollection('projects')).map((e) => e.data);

@@ -1,3 +1,5 @@
+import { CONTACT, NAME, POSITIONING, RESUME_PATH } from '../lib/site-content';
+
 export type Tone = 'cmd' | 'out' | 'muted' | 'accent' | 'err';
 export type Line = { text: string; tone: Tone };
 
@@ -34,14 +36,6 @@ const muted = (text: string): Line => ({ text, tone: 'muted' });
 const err = (text: string): Line => ({ text, tone: 'err' });
 const accent = (text: string): Line => ({ text, tone: 'accent' });
 
-export const CONTACT = {
-  email: 'singhsterabhi@gmail.com',
-  github: 'https://github.com/singhsterabhi',
-  linkedin: 'https://linkedin.com/in/singhsterabhi',
-};
-
-export const RESUME_PATH = '/abhishek-singh.pdf';
-
 export const COMMANDS: Command[] = [
   {
     name: 'help',
@@ -57,13 +51,19 @@ export const COMMANDS: Command[] = [
     description: 'Who Abhishek is and what he does, one level deeper than the hero.',
     inputSchema: NO_ARGS,
     readOnly: true,
-    run: () => ({
-      lines: [
-        out('Abhishek Singh — full-stack developer.'),
-        out('Interfaces people enjoy, APIs that hold up at scale.'),
-        muted('Gorakhpur by origin, nomad by habit. Currently Bengaluru.'),
-      ],
-    }),
+    run: () => {
+      // Structural split on the positioning line's own em dash, not a
+      // hand-copied paraphrase — POSITIONING (src/lib/site-content.ts) is
+      // the single source of the claim (spec §11).
+      const [, detail] = POSITIONING.split(' — ');
+      return {
+        lines: [
+          out(`${NAME} — full-stack developer.`),
+          out(detail),
+          muted('Gorakhpur by origin, nomad by habit. Currently Bengaluru.'),
+        ],
+      };
+    },
   },
   {
     name: 'projects',

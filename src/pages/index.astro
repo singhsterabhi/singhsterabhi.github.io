@@ -6,8 +6,7 @@ import Hero from '../components/Hero.astro';
 import ProjectGrid from '../components/ProjectGrid.astro';
 import Footer from '../components/Footer.astro';
 import Terminal from '../islands/Terminal';
-import { CONTACT } from '../commands/registry';
-import { POSITIONING, HOME_ABOUT_TEASER } from '../lib/site-content';
+import { CONTACT, HOME_ABOUT_TEASER, POSITIONING } from '../lib/site-content';
 
 const entries = await getCollection('projects');
 const projects = entries
