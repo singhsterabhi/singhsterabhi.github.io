@@ -7,7 +7,7 @@ interface Props { project: Project }
 const { project: p } = Astro.props;
 
 const cardClass = [
-  'flex flex-col justify-between gap-6 rounded-xl p-7',
+  'reveal flex flex-col justify-between gap-6 rounded-xl p-7',
   p.featured
     ? 'md:col-span-2 min-h-[300px] border-[var(--color-accent-800)] bg-[linear-gradient(155deg,var(--color-surface)_0%,color-mix(in_oklch,var(--color-surface)_62%,var(--color-bg))_70%)]'
     : 'min-h-[260px] border-[var(--color-neutral-900)] bg-[color-mix(in_oklch,var(--color-surface)_62%,var(--color-bg))]',

@@ -66,3 +66,31 @@ h1, h2, h3, h4, h5, h6 {
     scroll-behavior: auto !important;
   }
 }
+
+/* Motion contract in practice (§10, Task 15): native CSS scroll-driven
+   reveal, no JS animation library. Progressive enhancement — without
+   `view()` support nothing animates and nothing is hidden, so there is no
+   way for content to be stuck invisible. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    :root:not([data-motion="reduced"]) .reveal {
+      animation: reveal-in linear both;
+      animation-timeline: view();
+      animation-range: entry 8% cover 26%;
+      animation-duration: var(--dur-4);
+      animation-timing-function: var(--ease);
+    }
+  }
+}
+
+@keyframes reveal-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Explicit reduced path: present, visible, no movement (§10). */
+:root[data-motion="reduced"] .reveal {
+  opacity: 1;
+  transform: none;
+  animation: none;
+}

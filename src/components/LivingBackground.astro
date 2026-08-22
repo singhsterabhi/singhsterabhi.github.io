@@ -1,0 +1,103 @@
+---
+// The living background (decision doc §"The living background"): a
+// character-rain field over a scanline drift. Purely decorative, mounted
+// once in Base.astro behind page content on all four routes.
+//
+// Non-negotiables from the decision doc, enforced in this file + rain.ts:
+//   1. Canvas, code-split, started on idle — the <script> below dynamically
+//      imports `../scripts/rain` inside requestIdleCallback (falling back
+//      to setTimeout), so the rain code never ships in the entry bundle
+//      and never runs before paint.
+//   2. Reduced motion: one static frame, then nothing moves (rain.ts).
+//   3. JS disabled: the canvas is `aria-hidden` and empty; nothing else on
+//      the page depends on it, so a no-JS visit is unaffected.
+//   4. Paused via IntersectionObserver + visibilitychange; column count and
+//      DPR are capped for mobile (rain.ts columnCount / dpr cap).
+//   5. Lower alpha ceiling in the light theme (rain.ts maxAlpha).
+---
+<canvas
+  aria-hidden="true"
+  data-living-bg
+  class="pointer-events-none fixed inset-0 z-0 h-full w-full"
+></canvas>
+
+<script>
+  import type { Rain, Theme } from '../scripts/rain';
+
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-living-bg]');
+  if (canvas) {
+    let rain: Rain | null = null;
+    let visible = true;
+    let pageVisible = document.visibilityState === 'visible';
+
+    const currentTheme = (): Theme =>
+      document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+
+    const reducedMotion = () =>
+      document.documentElement.getAttribute('data-motion') === 'reduced';
+
+    const shouldRun = () => visible && pageVisible && !reducedMotion();
+
+    const applyRunState = () => {
+      if (!rain) return;
+      if (shouldRun()) {
+        if (!rain.running()) rain.start();
+      } else {
+        rain.stop();
+      }
+    };
+
+    const load = () => {
+      import('../scripts/rain').then(({ createRain }) => {
+        if (!canvas) return;
+        rain = createRain(canvas, {
+          reducedMotion: reducedMotion(),
+          theme: currentTheme(),
+        });
+        rain.resize(canvas.clientWidth, canvas.clientHeight);
+        rain.start();
+        applyRunState();
+      });
+    };
+
+    // Non-negotiable 1: never in the LCP path — start after the browser
+    // is idle (Safari has no requestIdleCallback, so fall back to a timer).
+    const ric = (window as typeof window & {
+      requestIdleCallback?: (cb: () => void) => number;
+    }).requestIdleCallback;
+    if (ric) ric(load);
+    else setTimeout(load, 200);
+
+    // Non-negotiable 4: pause when off-screen or the tab is hidden.
+    new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      applyRunState();
+    }).observe(canvas);
+
+    document.addEventListener('visibilitychange', () => {
+      pageVisible = document.visibilityState === 'visible';
+      applyRunState();
+    });
+
+    // Re-derive columns on resize, debounced.
+    let resizeTimer: ReturnType<typeof setTimeout> | undefined;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        if (rain && canvas) rain.resize(canvas.clientWidth, canvas.clientHeight);
+      }, 150);
+    });
+
+    // Recolour on theme flip.
+    new MutationObserver(() => {
+      rain?.setTheme(currentTheme());
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+    // Motion toggle can also flip at runtime (non-negotiable 2).
+    new MutationObserver(() => {
+      if (!rain) return;
+      rain.setReducedMotion(reducedMotion());
+      applyRunState();
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-motion'] });
+  }
+</script>
