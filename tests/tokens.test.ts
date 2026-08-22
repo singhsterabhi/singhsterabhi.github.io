@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { wcagContrast, parse, oklch } from 'culori';
+import { wcagContrast, parse, oklch, inGamut } from 'culori';
 
 const css = readFileSync('src/styles/tokens.css', 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
 
@@ -107,6 +107,22 @@ describe('design tokens', () => {
     for (const [name, theme] of [['light', light], ['dark', dark]] as const) {
       const c = wcagContrast(parse(theme['--color-neutral-400'])!, parse(theme['--color-neutral-900'])!);
       expect(c, `${name} tag-on-chip contrast ${c}`).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
+  // OKLCH can name colours no screen can show. When a step is outside sRGB the
+  // browser silently clips it, so the colour that renders is NOT the colour
+  // declared — and every contrast number measured above is measured against a
+  // value that never reaches a pixel. Four steps of the amber light ramp were
+  // out of gamut when first drafted; nothing here could have caught it.
+  it('keeps every accent step inside sRGB, so measured contrast is what renders', () => {
+    const srgb = inGamut('rgb');
+    for (const [name, theme] of [['light', light], ['dark', dark]] as const) {
+      for (const t of REQUIRED) {
+        if (!t.startsWith('--color-accent-')) continue;
+        expect(srgb(parse(theme[t])!), `${name} ${t} = ${theme[t]} is outside sRGB`).toBe(true);
+      }
+      expect(srgb(parse(theme['--color-accent'])!), `${name} --color-accent outside sRGB`).toBe(true);
     }
   });
 

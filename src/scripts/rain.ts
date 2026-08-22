@@ -122,7 +122,7 @@ export function createRain(canvas: HTMLCanvasElement, opts: RainOptions): Rain {
   );
 
   let head = readColor('--color-accent-2', '#e070c0');
-  let tail = readColor('--color-accent', '#4b8ff5');
+  let tail = readColor('--color-accent', '#f5ae39');
 
   function applyCanvasSize() {
     canvas.width = Math.max(1, Math.floor(width * dpr));

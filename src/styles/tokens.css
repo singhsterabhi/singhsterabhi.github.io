@@ -7,7 +7,7 @@
   --color-bg: oklch(0.962 0.006 250);
   --color-surface: oklch(0.995 0.003 250);
   --color-text: oklch(0.200 0.020 265);
-  --color-accent: oklch(0.480 0.180 248);
+  --color-accent: oklch(0.510 0.110 65);
   --color-accent-2: oklch(0.480 0.180 345);
   --color-divider: color-mix(in oklch, var(--color-text) 16%, transparent);
 
@@ -30,15 +30,15 @@
   --color-neutral-800: oklch(0.820 0.008 250);
   --color-neutral-900: oklch(0.900 0.006 250);
 
-  --color-accent-100: oklch(0.250 0.105 255);
-  --color-accent-200: oklch(0.325 0.140 252);
-  --color-accent-300: oklch(0.420 0.170 250);
-  --color-accent-400: oklch(0.480 0.180 248);
-  --color-accent-500: oklch(0.550 0.170 247);
-  --color-accent-600: oklch(0.630 0.150 246);
-  --color-accent-700: oklch(0.730 0.110 245);
-  --color-accent-800: oklch(0.820 0.075 245);
-  --color-accent-900: oklch(0.900 0.045 245);
+  --color-accent-100: oklch(0.270 0.060 60);
+  --color-accent-200: oklch(0.350 0.076 62);
+  --color-accent-300: oklch(0.440 0.095 64);
+  --color-accent-400: oklch(0.510 0.110 65);
+  --color-accent-500: oklch(0.590 0.125 68);
+  --color-accent-600: oklch(0.670 0.135 72);
+  --color-accent-700: oklch(0.770 0.140 78);
+  --color-accent-800: oklch(0.860 0.110 82);
+  --color-accent-900: oklch(0.925 0.075 88);
 
   --color-accent-2-300: oklch(0.440 0.175 345);
   --color-accent-2-500: oklch(0.480 0.180 345);
@@ -58,7 +58,7 @@
   --color-bg: oklch(0.155 0.030 265);
   --color-surface: oklch(0.190 0.032 265);
   --color-text: oklch(0.950 0.010 200);
-  --color-accent: oklch(0.700 0.185 245);
+  --color-accent: oklch(0.800 0.150 75);
   --color-accent-2: oklch(0.700 0.215 340);
   --color-divider: color-mix(in oklch, var(--color-text) 16%, transparent);
 
@@ -75,15 +75,15 @@
   --color-neutral-800: oklch(0.330 0.025 258);
   --color-neutral-900: oklch(0.228 0.022 260);
 
-  --color-accent-100: oklch(0.945 0.045 245);
-  --color-accent-200: oklch(0.880 0.090 246);
-  --color-accent-300: oklch(0.775 0.155 248);
-  --color-accent-400: oklch(0.700 0.185 245);
-  --color-accent-500: oklch(0.640 0.180 247);
-  --color-accent-600: oklch(0.565 0.160 249);
-  --color-accent-700: oklch(0.480 0.135 250);
-  --color-accent-800: oklch(0.395 0.100 250);
-  --color-accent-900: oklch(0.300 0.070 252);
+  --color-accent-100: oklch(0.960 0.040 85);
+  --color-accent-200: oklch(0.905 0.080 82);
+  --color-accent-300: oklch(0.855 0.120 78);
+  --color-accent-400: oklch(0.800 0.150 75);
+  --color-accent-500: oklch(0.745 0.145 72);
+  --color-accent-600: oklch(0.665 0.130 70);
+  --color-accent-700: oklch(0.560 0.110 68);
+  --color-accent-800: oklch(0.450 0.085 66);
+  --color-accent-900: oklch(0.335 0.060 64);
 
   --color-accent-2-300: oklch(0.780 0.160 340);
   --color-accent-2-500: oklch(0.700 0.215 340);
@@ -97,7 +97,7 @@
     --color-bg: oklch(0.155 0.030 265);
     --color-surface: oklch(0.190 0.032 265);
     --color-text: oklch(0.950 0.010 200);
-    --color-accent: oklch(0.700 0.185 245);
+    --color-accent: oklch(0.800 0.150 75);
     --color-accent-2: oklch(0.700 0.215 340);
     --color-divider: color-mix(in oklch, var(--color-text) 16%, transparent);
 
@@ -114,15 +114,15 @@
     --color-neutral-800: oklch(0.330 0.025 258);
     --color-neutral-900: oklch(0.228 0.022 260);
 
-    --color-accent-100: oklch(0.945 0.045 245);
-    --color-accent-200: oklch(0.880 0.090 246);
-    --color-accent-300: oklch(0.775 0.155 248);
-    --color-accent-400: oklch(0.700 0.185 245);
-    --color-accent-500: oklch(0.640 0.180 247);
-    --color-accent-600: oklch(0.565 0.160 249);
-    --color-accent-700: oklch(0.480 0.135 250);
-    --color-accent-800: oklch(0.395 0.100 250);
-    --color-accent-900: oklch(0.300 0.070 252);
+    --color-accent-100: oklch(0.960 0.040 85);
+    --color-accent-200: oklch(0.905 0.080 82);
+    --color-accent-300: oklch(0.855 0.120 78);
+    --color-accent-400: oklch(0.800 0.150 75);
+    --color-accent-500: oklch(0.745 0.145 72);
+    --color-accent-600: oklch(0.665 0.130 70);
+    --color-accent-700: oklch(0.560 0.110 68);
+    --color-accent-800: oklch(0.450 0.085 66);
+    --color-accent-900: oklch(0.335 0.060 64);
 
     --color-accent-2-300: oklch(0.780 0.160 340);
     --color-accent-2-500: oklch(0.700 0.215 340);
