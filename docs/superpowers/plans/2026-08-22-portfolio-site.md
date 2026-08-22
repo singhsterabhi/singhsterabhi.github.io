@@ -3139,7 +3139,7 @@ export function buildLlmsTxt(projects: Project[]): string {
     `- Email: ${CONTACT.email}`,
     `- GitHub: ${CONTACT.github}`,
     `- LinkedIn: ${CONTACT.linkedin}`,
-    `- Résumé: ${SITE}${RESUME_PATH}`,
+    ...(hasResume ? [`- Résumé: ${SITE}${RESUME_PATH}`] : []),  // dead-link rule (spec §6)
     '',
     '## For agents',
     `- Full text: ${SITE}/llms-full.txt`,
@@ -3182,7 +3182,7 @@ export function buildLlmsFullTxt(projects: Project[]): string {
     `- Email: ${CONTACT.email}`,
     `- GitHub: ${CONTACT.github}`,
     `- LinkedIn: ${CONTACT.linkedin}`,
-    `- Résumé: ${SITE}${RESUME_PATH}`,
+    ...(hasResume ? [`- Résumé: ${SITE}${RESUME_PATH}`] : []),  // dead-link rule (spec §6)
     '',
   ].join('\n');
 }
@@ -3231,7 +3231,12 @@ import { getCollection } from 'astro:content';
 import { buildLlmsTxt } from '../lib/site-content';
 
 export const GET: APIRoute = async () => {
-  const projects = (await getCollection('projects')).map((e) => e.data);
+  // Featured-first, identical to index.astro and terminal.astro. The sort is not
+  // cosmetic: an agent reading llms.txt must get the same notion of what matters
+  // most as a visitor reading the page.
+  const projects = (await getCollection('projects'))
+    .map((e) => e.data)
+    .sort((a, b) => Number(b.featured) - Number(a.featured));
   return new Response(buildLlmsTxt(projects as any), {
     headers: { 'Content-Type': 'text/plain; charset=utf-8' },
   });
@@ -3245,7 +3250,12 @@ import { getCollection } from 'astro:content';
 import { buildLlmsFullTxt } from '../lib/site-content';
 
 export const GET: APIRoute = async () => {
-  const projects = (await getCollection('projects')).map((e) => e.data);
+  // Featured-first, identical to index.astro and terminal.astro. The sort is not
+  // cosmetic: an agent reading llms.txt must get the same notion of what matters
+  // most as a visitor reading the page.
+  const projects = (await getCollection('projects'))
+    .map((e) => e.data)
+    .sort((a, b) => Number(b.featured) - Number(a.featured));
   return new Response(buildLlmsFullTxt(projects as any), {
     headers: { 'Content-Type': 'text/plain; charset=utf-8' },
   });

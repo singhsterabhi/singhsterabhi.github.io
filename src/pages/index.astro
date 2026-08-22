@@ -7,6 +7,7 @@ import ProjectGrid from '../components/ProjectGrid.astro';
 import Footer from '../components/Footer.astro';
 import Terminal from '../islands/Terminal';
 import { CONTACT } from '../commands/registry';
+import { POSITIONING, HOME_ABOUT_TEASER } from '../lib/site-content';
 
 const entries = await getCollection('projects');
 const projects = entries
@@ -22,7 +23,7 @@ const jsonLd = {
       '@id': site + '#person',
       name: 'Abhishek Singh',
       jobTitle: 'Full-stack developer',
-      description: 'Full-stack developer — I build interfaces people enjoy and APIs that hold up at scale.',
+      description: POSITIONING,
       url: site,
       email: 'mailto:' + CONTACT.email,
       sameAs: [CONTACT.github, CONTACT.linkedin],
@@ -41,7 +42,7 @@ const jsonLd = {
 ---
 <Base
   title="Abhishek Singh — full-stack developer"
-  description="Full-stack developer — I build interfaces people enjoy and APIs that hold up at scale."
+  description={POSITIONING}
   canonical={site}
   markdownUrl={site + 'index.md'}
   jsonLd={jsonLd}
@@ -54,7 +55,7 @@ const jsonLd = {
       <div class="max-w-[56ch]">
         <h2 class="mb-5 font-mono text-[13px] font-medium uppercase tracking-[0.16em] text-[var(--color-neutral-600)]">About</h2>
         <p class="mb-5.5 text-[20px] leading-snug text-[var(--color-neutral-300)] text-pretty">
-          Grew up in Gorakhpur, currently a bit of a nomad. I care about the boring parts — cold starts, empty states, the third click — and I like the kind of work where the fix is small and the difference is obvious.
+          {HOME_ABOUT_TEASER}
         </p>
         <a href="/about" class="border-b border-[var(--color-accent-800)] text-[15px] text-[var(--color-accent-300)] no-underline hover:border-[var(--color-accent)]">More about me →</a>
       </div>

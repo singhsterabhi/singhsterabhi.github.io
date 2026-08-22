@@ -1,0 +1,28 @@
+# Humans and general crawlers
+User-agent: *
+Allow: /
+
+# AI crawlers and agents — named explicitly so the policy is a stated
+# decision rather than an accident of the wildcard above.
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+Sitemap: https://singhsterabhi.pages.dev/sitemap-index.xml

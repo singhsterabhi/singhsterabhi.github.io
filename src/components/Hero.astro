@@ -2,6 +2,7 @@
 import { existsSync } from 'node:fs';
 import TerminalButton from './TerminalButton.astro';
 import { CONTACT, RESUME_PATH } from '../commands/registry';
+import { POSITIONING } from '../lib/site-content';
 
 // Same dead-link rule the project cards follow (spec §6): never render a link
 // to something that is not there. The résumé PDF is an outstanding user input,
@@ -18,7 +19,7 @@ const secondary = 'inline-flex items-center gap-2 rounded-lg border border-[var(
     Abhishek Singh
   </h1>
   <p class="positioning mb-10 max-w-[34ch] text-[21px] leading-normal text-[var(--color-neutral-300)] text-pretty">
-    Full-stack developer — I build interfaces people enjoy and APIs that hold up at scale.
+    {POSITIONING}
   </p>
   <div class="mb-10 flex flex-wrap gap-2.5">
     {hasResume && (

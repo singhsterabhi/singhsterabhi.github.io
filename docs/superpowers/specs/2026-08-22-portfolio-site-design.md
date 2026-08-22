@@ -496,6 +496,14 @@ from scoring. Nothing is built to satisfy them.
 Not applicable. No authentication surface and no payment surface exist, and
 none is invented to score points.
 
+### Ordering must match the human pages
+
+Any list the agent surface emits uses the **same sort as the human-facing page**.
+Projects are featured-first in `llms.txt`, `llms-full.txt` and the markdown twins,
+exactly as on Home and `/terminal`. "Featured" is the signal about which project
+to look at first; an agent that receives a different order receives a different
+answer to that question, which is the drift this whole section exists to prevent.
+
 ### Design principle
 
 Every artefact above is **generated from the same source as the human-facing

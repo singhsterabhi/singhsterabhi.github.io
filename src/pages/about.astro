@@ -7,6 +7,7 @@ import Footer from '../components/Footer.astro';
 import Timeline from '../components/Timeline.astro';
 import Terminal from '../islands/Terminal';
 import { CONTACT, RESUME_PATH } from '../commands/registry';
+import { ABOUT_PARAGRAPHS } from '../lib/site-content';
 
 const entries = (await getCollection('timeline')).map((e) => e.data);
 const projects = (await getCollection('projects')).map((e) => e.data);
@@ -42,16 +43,16 @@ const body = 'mb-5 text-[17px] leading-[1.7] text-[var(--color-neutral-400)] tex
       </h1>
       <div class="max-w-[62ch]">
         <p class="mb-5 text-[18px] leading-[1.65] text-[var(--color-neutral-300)] text-pretty">
-          I'm Abhishek. I grew up in Gorakhpur and I've been a bit of a nomad since — a few cities, a few teams, one steady habit of taking things apart to see why they're slow.
+          {ABOUT_PARAGRAPHS[0]}
         </p>
         <p class={body}>
-          Work-wise I sit in the middle: interfaces on one side, the services behind them on the other. The parts I enjoy most are the unglamorous ones — a table that stays smooth at ten thousand rows, an endpoint whose p99 doesn't wobble when traffic triples, an empty state that tells you what to do next.
+          {ABOUT_PARAGRAPHS[1]}
         </p>
         <p class={body}>
-          Away from a keyboard it's mostly music and movies, and a running list of both that I'm always happy to argue about.
+          {ABOUT_PARAGRAPHS[2]}
         </p>
         <p class="m-0 text-[17px] leading-[1.7] text-[var(--color-neutral-400)] text-pretty">
-          If any of this sounds like your kind of problem — hit me up.
+          {ABOUT_PARAGRAPHS[3]}
         </p>
       </div>
       <div class="mt-9 flex flex-wrap gap-2.5">
