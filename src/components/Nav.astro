@@ -5,18 +5,25 @@ interface Props { current?: 'home' | 'about' }
 const { current } = Astro.props;
 const link = 'text-sm no-underline hover:text-[var(--color-text)]';
 ---
-<header class="mx-auto flex max-w-[1120px] flex-wrap items-center justify-between gap-x-6 gap-y-2 px-5 py-5.5 md:px-10">
-  <a href="/" class="font-heading text-[15px] font-medium tracking-[-0.01em] text-[var(--color-text)] no-underline">
-    abhishek<span class="text-[var(--color-accent)]">.</span>
-  </a>
-  <nav class="flex items-center gap-3 sm:gap-4 md:gap-7" aria-label="Main">
-    <a href="/#work" class={`${link} text-[var(--color-neutral-400)]`}>Work</a>
-    <a href="/about"
-       aria-current={current === 'about' ? 'page' : undefined}
-       class={current === 'about'
-         ? `${link} border-b border-[var(--color-accent)] pb-0.5 text-[var(--color-text)]`
-         : `${link} text-[var(--color-neutral-400)]`}>About</a>
-    <TerminalButton variant="nav" />
-    <ThemeToggle />
-  </nav>
+<!-- The bar is full-bleed and sticky; the max-width lives on the inner row.
+     Constraining the sticky element itself would leave transparent gutters for
+     content to scroll through on wide screens. `.site-header` carries the
+     frosted surface (global.css) because it needs an @supports fallback for
+     browsers without backdrop-filter, which utilities cannot express. -->
+<header class="site-header sticky top-0 z-50">
+  <div class="mx-auto flex max-w-[1120px] flex-wrap items-center justify-between gap-x-6 gap-y-2 px-5 py-5.5 md:px-10">
+    <a href="/" class="font-heading text-[15px] font-medium tracking-[-0.01em] text-[var(--color-text)] no-underline">
+      abhishek<span class="text-[var(--color-accent)]">.</span>
+    </a>
+    <nav class="flex items-center gap-3 sm:gap-4 md:gap-7" aria-label="Main">
+      <a href="/#work" class={`${link} text-[var(--color-neutral-400)]`}>Work</a>
+      <a href="/about"
+         aria-current={current === 'about' ? 'page' : undefined}
+         class={current === 'about'
+           ? `${link} border-b border-[var(--color-accent)] pb-0.5 text-[var(--color-text)]`
+           : `${link} text-[var(--color-neutral-400)]`}>About</a>
+      <TerminalButton variant="nav" />
+      <ThemeToggle />
+    </nav>
+  </div>
 </header>
