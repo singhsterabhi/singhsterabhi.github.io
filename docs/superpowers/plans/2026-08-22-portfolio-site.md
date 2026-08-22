@@ -33,6 +33,7 @@ Every task's requirements implicitly include this section. Values are copied ver
 - **Viewport verification is not optional and vitest cannot do it.** Before a page task is complete, load the built page in the headless browser at 320 / 375 / 414 / 768 / 1440 and assert `document.body.scrollWidth <= document.documentElement.clientWidth` at every width, plus 280 as a control — a real fix passes at a width nothing real uses, a tuned one does not. Two real mobile defects in Task 10 were invisible to 109 passing tests.
 - **Test placement rule — this is not cosmetic.** Astro's container renderer does **not** work under jsdom (verified on Astro 7.2.4: `renderToString` throws inside `NOOP_MIDDLEWARE_FN`). Therefore: tests that container-render `.astro` components live in **`tests/components/`** and run under **node** with NO environment pragma. Tests that genuinely need a DOM — React islands via `@testing-library/react`, anything touching `document` — live in **`tests/dom/`** and carry `// @vitest-environment jsdom` as their FIRST line. Putting a container-render test in `tests/dom/` with the pragma produces a confusing `NoMatchingRenderer` failure.
 - **Harness:** `vitest.config.ts` uses `getViteConfig` from `astro/config` (plain `defineConfig` cannot resolve `.astro` imports), with a base `environment: 'node'` and per-file pragmas for the DOM suites. `projects` was tried and rejected: each project gets its own Vite config and loses the root Astro plugin. Do not "simplify" this back.
+- **A gate never gets an allowlist.** When `audit-placeholders.mjs` flags a legitimate string, change the *source's spelling*, not the audit's pattern. The project's two placeholder detectors collided this way — `src/lib/schemas.ts`'s own regex contained the literal `fill in` — and the fix was `fill\s+in` in the detector, which matches strictly more while removing the collision. Exclusions accumulate; a gate with a growing allowlist stops being a gate.
 - **Package manager: pnpm 10.33.2.** Every command in this plan uses pnpm. `pnpm-lock.yaml` is committed — Cloudflare detects the package manager from it. Never run `npm install` in this repo; it would produce a competing `package-lock.json` and a different dependency tree than the one tested.
 - **Commit discipline — IMPLEMENTERS MUST NEVER COMMIT.** Do not run `git commit`, `git commit --amend`, or any command that creates a commit. Stage your work with `git add -A`, report, and stop. The controller commits in the main conversation, where the user sees each permission decision. **If any git command of yours is denied, that denial is final — report it as a concern and stop. Never re-run a denied command.** Retrying a denied call until it succeeds is a permission bypass and is treated as a task failure regardless of the outcome.
 - Commit messages (written by the controller) carry no `Co-Authored-By` trailer, no `Generated with` line, and no signature of any kind — the user asked for this explicitly.
@@ -1133,7 +1134,7 @@ zod: `pnpm add zod`.
 ```ts
 import { z } from 'zod';
 
-const PLACEHOLDER = /\b(fill in|todo|tbd|lorem|placeholder|add the|example\.com)\b/i;
+const PLACEHOLDER = /\b(fill\s+in|todo|tbd|lorem|placeholder|add the|example\.com)\b/i;
 
 export const projectSchema = z.object({
   slug: z.string().regex(/^[a-z0-9-]+$/, 'slug must be lowercase kebab-case'),
@@ -3636,7 +3637,7 @@ Do NOT commit. Report that the work is staged; the controller commits.
 
 **Interfaces:**
 - Consumes: a built `dist/` and, for the agent surface, a deployed base URL.
-- Produces: `pnpm verify:links`, `pnpm verify:agents -- <baseUrl>`, `pnpm audit:placeholders`.
+- Produces: `pnpm verify:links`, `pnpm verify:agents <baseUrl>`, `pnpm audit:placeholders`.
 
 - [ ] **Step 1: Write the link verifier**
 
@@ -3820,7 +3821,7 @@ Give them these exact settings:
 
 - [ ] **Step 3: Verify the deploy**
 
-Run: `pnpm verify:agents -- https://singhsterabhi.pages.dev`
+Run: `pnpm verify:agents https://singhsterabhi.pages.dev`
 Expected: every check `OK`, including the genuine-404 check and the `Link` header check. A failing `Link` header means `public/_headers` was malformed — Cloudflare fails it silently, which is exactly why this check exists.
 
 - [ ] **Step 4: Build the redirect stub on its own branch**
@@ -3887,7 +3888,7 @@ pnpm vitest run
 pnpm build
 pnpm audit:placeholders
 pnpm verify:links
-pnpm verify:agents -- https://singhsterabhi.pages.dev
+pnpm verify:agents https://singhsterabhi.pages.dev
 ```
 Record pass/fail and counts for each.
 

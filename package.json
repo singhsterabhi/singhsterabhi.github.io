@@ -8,7 +8,10 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "verify:links": "node scripts/verify-links.mjs",
+    "verify:agents": "node scripts/verify-agent-surface.mjs",
+    "audit:placeholders": "node scripts/audit-placeholders.mjs"
   },
   "keywords": [],
   "author": "",
@@ -33,6 +36,7 @@
     "culori": "4.0.2",
     "jsdom": "^30.0.1",
     "typescript": "^7.0.2",
-    "vitest": "4.1.11"
+    "vitest": "4.1.11",
+    "yaml": "^2.9.0"
   }
 }

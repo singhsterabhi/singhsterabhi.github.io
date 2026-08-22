@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const PLACEHOLDER = /\b(fill in|todo|tbd|lorem|placeholder|add the|example\.com)\b/i;
+const PLACEHOLDER = /\b(fill\s+in|todo|tbd|lorem|placeholder|add the|example\.com)\b/i;
 
 export const projectSchema = z.object({
   slug: z.string().regex(/^[a-z0-9-]+$/, 'slug must be lowercase kebab-case'),
