@@ -120,3 +120,48 @@ export function buildLlmsFullTxt(projects: Project[]): string {
     '',
   ].join('\n');
 }
+
+export function buildHomeMarkdown(projects: Project[]): string {
+  projects = [...projects].sort(featuredFirst);
+  return [
+    `# ${NAME}`,
+    '',
+    POSITIONING,
+    '',
+    `Based in ${LOCATION}. Open to talk.`,
+    '',
+    '## Selected work',
+    '',
+    ...projects.flatMap((p) => [
+      `### ${p.title}`,
+      '',
+      `${p.summary}`,
+      '',
+      `Tech: ${p.tags.join(', ')}`,
+      ...(links(p) ? ['', links(p)] : []),
+      '',
+    ]),
+    '## About',
+    '',
+    HOME_ABOUT_TEASER,
+    '',
+    `Full version: ${SITE}/about.md`,
+    '',
+    '## Contact',
+    '',
+    `Email ${CONTACT.email} · GitHub ${CONTACT.github} · LinkedIn ${CONTACT.linkedin}`,
+    '',
+  ].join('\n');
+}
+
+export function buildAboutMarkdown(): string {
+  return [
+    '# A short honest version',
+    '',
+    ...ABOUT_PARAGRAPHS.flatMap((p) => [p, '']),
+    '## Contact',
+    '',
+    `Email ${CONTACT.email}${hasResume() ? ` · Résumé ${SITE}${RESUME_PATH}` : ''}`,
+    '',
+  ].join('\n');
+}

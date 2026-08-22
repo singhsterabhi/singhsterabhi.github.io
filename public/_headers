@@ -1,0 +1,12 @@
+/*
+  Link: </llms.txt>; rel="alternate"; type="text/plain"; title="llms.txt"
+  Link: </sitemap-index.xml>; rel="sitemap"
+  Link: </.well-known/agent-card.json>; rel="service-desc"; type="application/json"
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
+/index.md
+  Content-Type: text/markdown; charset=utf-8
+
+/about.md
+  Content-Type: text/markdown; charset=utf-8
