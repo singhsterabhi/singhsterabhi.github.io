@@ -341,3 +341,102 @@ defects were invisible to a green suite:
 - **`tests/theme-safety.test.ts`** is new: no source file may mix a theme token
   toward a literal `black` or `white`, every panel/scrim token must be defined in
   all three theme blocks, and the scrim must stay translucent.
+
+---
+
+## Revision — click reaction in the living background (2026-08-22)
+
+The field was passive: it moved, but nothing the visitor did touched it. The
+brief was "when a click happens I want some reaction". Four directions were put
+up — a ripple through the rain, single-lane ignition, a radial glyph burst, and
+a decode flash that resolves noise into a real word. The user chose the ripple.
+
+**What it does.** A click sends an invisible wavefront out from the pointer.
+Nothing draws the ring: as the front crosses each column, that column flares —
+brighter, head colour reaching further down the lane — and surges downward,
+then decays back. Near lanes react first and distant ones a beat later, and that
+delay is the whole effect. The reaction lives *in* the medium rather than sitting
+on top of it, which is what separates this from the glyph-burst option.
+
+**Why x only.** `ripple()` takes no `y`. The field's grammar is vertical lanes,
+so the front excites whole lanes and the click's height carries no information.
+A `y` parameter would have been dead weight in the API.
+
+**Why the flare exceeds the resting alpha ceiling.** `maxAlphaFor()` caps the
+field at 0.30 (dark) / 0.38 (light) so it never competes with content *at rest*.
+A flare is a transient a few hundred ms long and is clamped separately at
+`RIPPLE_PEAK_ALPHA = 0.72`. Clamping it to the resting ceiling would have made
+the reaction invisible, which defeats the feature. `maxAlpha()` still reports
+the resting ceiling, so the existing invariant is unchanged rather than relaxed.
+
+**What it must never do.**
+
+- React under reduced motion. Non-negotiable 2 says nothing moves; a click is
+  no exception, so `ripple()` returns early.
+- Queue while the loop is stopped (off-screen, hidden tab). Wavefronts banked
+  during that time would all fire at once on the next `start()` — a burst of
+  flares from clicks the visitor made minutes ago.
+- Accumulate. Fall speed is *derived* from excitement each frame rather than
+  added into the column, so a decayed lane is indistinguishable from one that
+  was never hit. Rapid clicking is capped at four concurrent fronts, dropping
+  the oldest so the newest click always reacts.
+- Steal a click. The obvious way to get coordinates is to listen on the canvas,
+  which means dropping `pointer-events-none` and putting a full-viewport canvas
+  over every link and button on the page. The listener is on `window` instead.
+
+**Tests.** `tests/dom/rain.test.ts` drives the simulation through a new `step()`,
+because a ripple is only observable across several frames. The load-bearing
+assertion is that a distant lane is still at rest on the frame a near lane is
+flaring — without it, "ripple" degrades to "every column lights up at once" and
+still passes. `tests/components/living-background.test.ts` is new and guards the
+wiring as source text (the Astro inline script is never executed by a renderer):
+window listener, dialog skip, and `pointer-events-none` intact.
+
+---
+
+## Revision — the rain says something (2026-08-22)
+
+The field fell in random glyphs (`01<>/{}[]#$_—❯abcdef`). The brief was to make
+it "meaningful and quirky, maybe some kind of easter egg". Four vocabularies
+were offered — the terminal's own commands, complexity classes, algorithms and
+data structures, and the owner's actual skills. The owner chose their skills,
+mixed at roughly one column in three over the existing noise.
+
+**Mixed, not total.** `TOKEN_SHARE = 1/3`. The field has to keep reading as
+texture from across the room — it sits behind the page's own copy, and language
+back there competes with prose in a way noise does not. A third is enough that
+looking somewhere new usually finds something.
+
+**Sourced, never invented.** Every entry traces to real content in the repo:
+project tags and copy (`src/data/projects.yaml`), the timeline
+(`src/data/timeline.yaml`), or this site's own build. This is the owner's résumé
+in the wallpaper, so an invented token is a lie on the page. `Node`, `Postgres`
+and `p99` were all considered and dropped for exactly this reason — `p99` turned
+out to exist only in a *test fixture*, never in real content.
+
+The unglamorous entries are the point. `dehazing` and `segmentation` come from
+the 2017 IIT Madras internship, `circuits` and `power-systems` from the
+electrical-engineering degree. Nobody leaning in expects a frontend portfolio to
+mention image dehazing, and that surprise is what makes this an easter egg
+rather than a keyword list.
+
+**Reading direction is the whole risk.** Columns are stored bottom-up —
+`glyphs[0]` is the bright head at the *bottom*, and index increases upward
+(`col.y - i * GLYPH_CELL`). A token therefore has to be reversed on the way in.
+Get it wrong and every token renders backwards: still fine as texture from a
+distance, gibberish to the one visitor who leans in — precisely the person the
+feature exists for. There is now a test that samples thousands of recycles and
+asserts no column ever spells a token backwards.
+
+**Contents re-pick on recycle**, not just at creation. A column that kept its
+glyphs for the life of the page would show one token forever, so the visible
+vocabulary would never be wider than the column count no matter how many entries
+`TOKENS` has.
+
+**Tests.** `columnText()` returns each column as it reads on screen, which is
+what makes any of this observable. Beyond the direction test: the mix stays
+between 15% and 55% (catching both "pure noise" and "all language"), contents
+turn over, and one test per token asserts it appears somewhere in the repo's real
+content. That last suite deliberately excludes `src/scripts/rain.ts` from its
+corpus — `TOKENS` is declared there, so including it would make every assertion
+match its own declaration and certify nothing.

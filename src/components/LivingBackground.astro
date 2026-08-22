@@ -81,6 +81,21 @@
       applyRunState();
     });
 
+    // Click reaction: a wavefront out from the pointer. The canvas is
+    // pointer-events-none and fixed inset-0, so this listens on the window and
+    // clientX maps straight to canvas space with no offset maths.
+    //
+    // Clicks inside the terminal dialog are skipped: it sits above a blurred
+    // scrim, so a reaction back there is invisible work. rain.ripple() itself
+    // no-ops under reduced motion and while the loop is stopped, so this
+    // listener does not need to re-check either.
+    window.addEventListener('pointerdown', (e) => {
+      if (!rain) return;
+      const t = e.target;
+      if (t instanceof Element && t.closest('dialog')) return;
+      rain.ripple(e.clientX);
+    });
+
     // Re-derive columns on resize, debounced.
     let resizeTimer: ReturnType<typeof setTimeout> | undefined;
     window.addEventListener('resize', () => {
