@@ -1,5 +1,3 @@
-import { existsSync } from 'node:fs';
-
 export const SITE = 'https://singhsterabhi.pages.dev';
 export const NAME = 'Abhishek Singh';
 export const POSITIONING =
@@ -18,15 +16,15 @@ export const RESUME_PATH = '/abhishek-singh.pdf';
 // to every outbound link to an outstanding input): never advertise a URL that
 // 404s. The résumé PDF is an outstanding user input.
 //
-// Deliberately lazy (not evaluated at module load): this module is also
-// imported by src/commands/registry.ts, which client islands (Terminal.tsx,
-// webmcp.ts) bundle for the browser. node:fs is externalized to an empty
-// stub there, so calling existsSync at import time would throw at runtime
-// in the browser. Calling it only from inside the two build* functions below
-// — which the client never invokes — keeps this server-only.
-function hasResume(): boolean {
-  return existsSync(`public${RESUME_PATH}`);
-}
+// This module must import nothing from a Node builtin: it is also imported
+// by src/commands/registry.ts, which client islands (Terminal.tsx,
+// webmcp.ts) bundle for the browser, and such builtins get externalized to
+// a throwing stub there. Filesystem knowledge belongs to the server-only
+// callers (the src/pages/*.ts routes and Astro component frontmatter),
+// which check existsSync themselves and pass the result in here. Defaulting
+// to false means a caller that forgets the flag fails closed — it just
+// won't advertise a résumé link — rather than risking a dead link.
+export type ContentOptions = { hasResume?: boolean };
 
 export const ABOUT_PARAGRAPHS = [
   "I'm Abhishek. I grew up in Gorakhpur and I've been a bit of a nomad since — a few cities, a few teams, one steady habit of taking things apart to see why they're slow.",
@@ -51,7 +49,8 @@ const links = (p: Project) =>
 // what order a caller passes projects in.
 const featuredFirst = (a: Project, b: Project) => Number(b.featured) - Number(a.featured);
 
-export function buildLlmsTxt(projects: Project[]): string {
+export function buildLlmsTxt(projects: Project[], options: ContentOptions = {}): string {
+  const { hasResume = false } = options;
   projects = [...projects].sort(featuredFirst);
   return [
     `# ${NAME}`,
@@ -72,7 +71,7 @@ export function buildLlmsTxt(projects: Project[]): string {
     `- Email: ${CONTACT.email}`,
     `- GitHub: ${CONTACT.github}`,
     `- LinkedIn: ${CONTACT.linkedin}`,
-    ...(hasResume() ? [`- Résumé: ${SITE}${RESUME_PATH}`] : []),
+    ...(hasResume ? [`- Résumé: ${SITE}${RESUME_PATH}`] : []),
     '',
     '## For agents',
     `- Full text: ${SITE}/llms-full.txt`,
@@ -82,7 +81,8 @@ export function buildLlmsTxt(projects: Project[]): string {
   ].join('\n');
 }
 
-export function buildLlmsFullTxt(projects: Project[]): string {
+export function buildLlmsFullTxt(projects: Project[], options: ContentOptions = {}): string {
+  const { hasResume = false } = options;
   projects = [...projects].sort(featuredFirst);
   return [
     `# ${NAME}`,
@@ -116,12 +116,15 @@ export function buildLlmsFullTxt(projects: Project[]): string {
     `- Email: ${CONTACT.email}`,
     `- GitHub: ${CONTACT.github}`,
     `- LinkedIn: ${CONTACT.linkedin}`,
-    ...(hasResume() ? [`- Résumé: ${SITE}${RESUME_PATH}`] : []),
+    ...(hasResume ? [`- Résumé: ${SITE}${RESUME_PATH}`] : []),
     '',
   ].join('\n');
 }
 
-export function buildHomeMarkdown(projects: Project[]): string {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- options kept
+// for signature symmetry with the other builders; the home page has no
+// résumé link (see buildAboutMarkdown for that).
+export function buildHomeMarkdown(projects: Project[], _options: ContentOptions = {}): string {
   projects = [...projects].sort(featuredFirst);
   return [
     `# ${NAME}`,
@@ -154,14 +157,15 @@ export function buildHomeMarkdown(projects: Project[]): string {
   ].join('\n');
 }
 
-export function buildAboutMarkdown(): string {
+export function buildAboutMarkdown(options: ContentOptions = {}): string {
+  const { hasResume = false } = options;
   return [
     '# A short honest version',
     '',
     ...ABOUT_PARAGRAPHS.flatMap((p) => [p, '']),
     '## Contact',
     '',
-    `Email ${CONTACT.email}${hasResume() ? ` · Résumé ${SITE}${RESUME_PATH}` : ''}`,
+    `Email ${CONTACT.email}${hasResume ? ` · Résumé ${SITE}${RESUME_PATH}` : ''}`,
     '',
   ].join('\n');
 }

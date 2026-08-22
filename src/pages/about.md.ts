@@ -1,7 +1,8 @@
+import { existsSync } from 'node:fs';
 import type { APIRoute } from 'astro';
-import { buildAboutMarkdown } from '../lib/site-content';
+import { buildAboutMarkdown, RESUME_PATH } from '../lib/site-content';
 
 export const GET: APIRoute = () =>
-  new Response(buildAboutMarkdown(), {
+  new Response(buildAboutMarkdown({ hasResume: existsSync(`public${RESUME_PATH}`) }), {
     headers: { 'Content-Type': 'text/markdown; charset=utf-8' },
   });
