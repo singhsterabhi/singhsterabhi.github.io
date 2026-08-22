@@ -398,8 +398,9 @@ written.
 ### The living background (signature element)
 
 A **character-rain field** of mono glyphs falling in columns at varied speeds
-(bright magenta head, dim cyan tail) over a **slow scanline drift**, all at very
-low alpha. Adopted from the chosen concept; specified in the decision doc.
+(bright magenta head, dim cyan tail) at a per-theme alpha ceiling (the scanline
+drift originally specified here was removed at the user's request — static
+stripes added noise without motion and competed with the glyphs). Adopted from the chosen concept; specified in the decision doc.
 
 Non-negotiable, because a decorative background is exactly where performance and
 accessibility quietly die:
@@ -413,8 +414,10 @@ accessibility quietly die:
 4. **Mobile: fewer columns, lower frame budget, paused when not visible**
    (`IntersectionObserver`). The user asked specifically for mobile
    compatibility; a background that drains a phone battery fails that.
-5. **Light theme uses lower alpha** — the dark theme's values read as dirt on a
-   near-white ground.
+5. **Light theme uses a HIGHER alpha than dark** — corrected after the user
+   reported the field invisible in light mode. Dark glyphs on a white ground lose
+   contrast faster than light glyphs on a dark one, so the light theme needs more
+   opacity, not less. See the decision doc for the measured reasoning.
 
 ## 10. Accessibility
 

@@ -37,9 +37,19 @@ describe('createRain', () => {
     expect(r.running()).toBe(false);
   });
 
-  it('uses a lower alpha ceiling in the light theme', () => {
+  it('gives each theme its own alpha ceiling, tuned per ground', () => {
     const dark = createRain(cv, { reducedMotion: false, theme: 'dark' });
     const light = createRain(cv, { reducedMotion: false, theme: 'light' });
-    expect(light.maxAlpha()).toBeLessThan(dark.maxAlpha());
+    expect(dark.maxAlpha()).not.toBe(light.maxAlpha());
+    for (const a of [dark.maxAlpha(), light.maxAlpha()]) {
+      expect(a).toBeGreaterThan(0.1);   // below this the field is invisible
+      expect(a).toBeLessThan(0.45);     // above this it competes with content
+    }
+  });
+
+  it('uses a higher ceiling on the light ground, where glyphs are dark on white', () => {
+    const dark = createRain(cv, { reducedMotion: false, theme: 'dark' });
+    const light = createRain(cv, { reducedMotion: false, theme: 'light' });
+    expect(light.maxAlpha()).toBeGreaterThan(dark.maxAlpha());
   });
 });

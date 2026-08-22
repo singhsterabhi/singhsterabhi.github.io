@@ -180,8 +180,12 @@ spec §9). What it is:
 
 - A **character-rain field** of mono glyphs (`01<>/{}[]#$_—❯abcdef`) falling in
   columns at varied speeds, with a short bright head and a dim tail.
-- Over a **slow scanline drift** — 1px horizontal lines every 4px, creeping
-  vertically.
+- ~~Over a slow scanline drift — 1px horizontal lines every 4px, creeping
+  vertically.~~ **Removed 2026-08-22 at the user's request.** The stripes were
+  static texture that added visual noise without contributing motion, risked
+  moiré on the light ground, and competed with the glyphs for legibility. The
+  rain now carries the effect alone, which also frees a full-canvas stroke pass
+  per frame.
 - Head glyphs in magenta, tail glyphs in cyan, all at very low alpha (0.02–0.16).
 
 Non-negotiables carried into implementation:
@@ -196,8 +200,22 @@ Non-negotiables carried into implementation:
    and paused entirely when the tab or element is not visible
    (`IntersectionObserver`). The user asked specifically for mobile compatibility;
    a background that melts a phone battery fails that.
-5. **Light theme gets the same treatment at lower alpha** — on a near-white ground
-   the same alphas read as dirt rather than atmosphere.
+5. **Light theme needs a HIGHER alpha than dark, not lower.**
+
+   **Corrected 2026-08-22 after the user reported the field invisible in light
+   mode.** The original text here said the opposite — "the same alphas read as
+   dirt on a near-white ground" — and that reasoning was wrong, because it
+   assumed light-on-light. What actually happens:
+
+   | | glyph | ground | ΔL per unit alpha |
+   |---|---|---|---|
+   | dark | cyan L 0.815 | L 0.155 | ~0.66 |
+   | light | deep cyan L 0.480 | L 0.975 | ~0.50 |
+
+   Dark-on-white loses contrast faster than light-on-black, so the light ground
+   needs more opacity to register at all. At the original 0.08 the light field
+   was ΔL ≈ 0.04 — below the threshold of noticing. Values are tuned by
+   measuring painted-pixel count and mean alpha in both themes, not derived.
 
 ## Superseded
 

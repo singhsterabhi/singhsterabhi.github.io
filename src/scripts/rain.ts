@@ -1,5 +1,8 @@
-// Character-rain field + scanline drift — the "living background" (decision
-// doc §"The living background"). Hand-written canvas, no animation library.
+// Character-rain field — the "living background" (decision doc §"The living
+// background"). Hand-written canvas, no animation library. The scanline
+// drift layer was removed after user feedback (fix round 1): it read as a
+// print artifact on the light ground and competed with the glyphs rather
+// than adding motion, so only the rain remains.
 //
 // Five non-negotiables carried in from the decision doc, enforced here:
 //   1. This module is dynamically imported by LivingBackground.astro on
@@ -9,7 +12,9 @@
 //   3. With JS disabled the canvas is simply empty — nothing here runs.
 //   4. `columnCount` scales down for narrow viewports, capped at 26 at
 //      375px, and callers pause the loop when off-screen/hidden.
-//   5. `maxAlpha()` returns a lower ceiling for the light theme.
+//   5. `maxAlpha()` gives each theme its own ceiling, tuned per ground —
+//      light needs a HIGHER ceiling than dark (glyphs are dark-on-white
+//      there, which reads fainter per unit alpha than light-on-dark).
 
 export type Theme = 'dark' | 'light';
 
@@ -33,7 +38,6 @@ export interface Rain {
 
 const GLYPHS = '01<>/{}[]#$_—❯abcdef'.split('');
 const CELL = 16; // px per glyph cell, also the column pitch
-const SCANLINE_STEP = 4; // px between 1px scanlines
 
 /** Non-negotiable 4: mobile gets fewer columns and a lower frame budget.
  *  Scales with viewport width, capped at 26 columns at/around 375px, and
@@ -50,10 +54,15 @@ function readColor(name: string, fallback: string): string {
   return v || fallback;
 }
 
-/** Non-negotiable 5: dark reads at up to 0.16 alpha; light must be lower
- *  (0.08) or the same values read as dirt on a near-white ground. */
+/** Non-negotiable 5: each theme gets its own ceiling. Dark glyphs are
+ *  light-on-dark (ΔL per unit alpha ≈ 0.66); light glyphs are dark-on-white
+ *  (ΔL per unit alpha ≈ 0.50) — so light needs a HIGHER alpha ceiling than
+ *  dark to read with comparable presence, not a lower one. Raised again
+ *  (fix round 1, addendum) once the scanline layer was removed — with no
+ *  other texture on the canvas the glyphs are the whole field and need to
+ *  carry it alone. */
 function maxAlphaFor(theme: Theme): number {
-  return theme === 'dark' ? 0.16 : 0.08;
+  return theme === 'dark' ? 0.30 : 0.38;
 }
 
 interface Column {
@@ -69,7 +78,11 @@ function makeColumn(x: number, height: number): Column {
   const glyphs = Array.from({ length }, () => GLYPHS[Math.floor(Math.random() * GLYPHS.length)]);
   return {
     x,
-    y: Math.random() * -height,
+    // Seeded within the visible band (not above it) so the very first
+    // drawn frame already shows a populated field — this matters under
+    // reduced motion, where that first frame is the only one ever drawn
+    // and must never come up blank by the luck of the random seed.
+    y: Math.random() * height,
     speed: 0.4 + Math.random() * 1.1,
     glyphs,
     length,
@@ -82,7 +95,6 @@ export function createRain(canvas: HTMLCanvasElement, opts: RainOptions): Rain {
   let reducedMotion = opts.reducedMotion;
   let running = false;
   let rafId: number | null = null;
-  let scanlineOffset = 0;
 
   let width = canvas.clientWidth || 800;
   let height = canvas.clientHeight || 600;
@@ -124,13 +136,6 @@ export function createRain(canvas: HTMLCanvasElement, opts: RainOptions): Rain {
       }
     }
 
-    // Scanline drift: 1px lines every 4px, creeping vertically.
-    ctx.globalAlpha = alpha * 0.5;
-    ctx.fillStyle = tail;
-    for (let y = -SCANLINE_STEP; y < height + SCANLINE_STEP; y += SCANLINE_STEP) {
-      const ly = (y + scanlineOffset) % (height + SCANLINE_STEP);
-      ctx.fillRect(0, ly, width, 1);
-    }
     ctx.globalAlpha = 1;
   }
 
@@ -142,7 +147,6 @@ export function createRain(canvas: HTMLCanvasElement, opts: RainOptions): Rain {
         col.speed = 0.4 + Math.random() * 1.1;
       }
     }
-    scanlineOffset = (scanlineOffset + 0.15) % SCANLINE_STEP;
     drawFrame();
     if (running) rafId = requestAnimationFrame(tick);
   }

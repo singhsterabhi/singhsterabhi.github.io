@@ -1,7 +1,9 @@
 ---
 // The living background (decision doc §"The living background"): a
-// character-rain field over a scanline drift. Purely decorative, mounted
-// once in Base.astro behind page content on all four routes.
+// character-rain field. Purely decorative, mounted once in Base.astro
+// behind page content on all four routes. (The scanline drift layer was
+// removed in fix round 1 — it read as a print artifact on the light
+// ground and competed with the glyphs; only the rain remains.)
 //
 // Non-negotiables from the decision doc, enforced in this file + rain.ts:
 //   1. Canvas, code-split, started on idle — the <script> below dynamically
