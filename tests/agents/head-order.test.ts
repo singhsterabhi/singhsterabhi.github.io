@@ -1,13 +1,14 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { pageFile } from '../helpers/dist';
 
 // Task 11 built the About page, so both routes are checked.
 // Task 12 added /terminal, which also renders through Base.astro, so the
 // no-flash invariant applies to it too.
 const pages = [
-  'dist/index.html',
-  'dist/about/index.html',
-  'dist/terminal/index.html',
+  pageFile('/'),
+  pageFile('/about'),
+  pageFile('/terminal'),
   'dist/404.html',
 ];
 

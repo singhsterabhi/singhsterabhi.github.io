@@ -1,7 +1,8 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { pageFile } from '../helpers/dist';
 
-const path = 'dist/terminal/index.html';
+const path = pageFile('/terminal');
 
 describe('/terminal alias route (built output)', () => {
   it('is emitted', () => {

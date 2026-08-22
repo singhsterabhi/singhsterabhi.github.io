@@ -5,6 +5,13 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   site: 'https://singhsterabhi.pages.dev',
+  // Emit /about.html rather than /about/index.html, and never append a slash.
+  // With the default 'directory' format the host serves /about/ and 308s /about
+  // to it — so the canonical (/about), the sitemap (/about/) and the served URL
+  // all disagreed, and every canonical pointed at a redirect. Only a real host
+  // shows this: `astro dev` answers both forms without redirecting.
+  trailingSlash: 'never',
+  build: { format: 'file' },
   integrations: [sitemap(), react()],
   vite: { plugins: [tailwindcss()] },
   fonts: [
