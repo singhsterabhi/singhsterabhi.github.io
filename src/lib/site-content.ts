@@ -41,6 +41,13 @@ export type Project = {
   tags: string[]; repo?: string; demo?: string; featured: boolean;
 };
 
+export type Timeline = { order: number; when: string; role: string; note: string };
+
+// Most recent first. Applied here, not only at the call sites, so the invariant
+// holds no matter what order a caller passes entries in — same reasoning as
+// featuredFirst above.
+export const byRecency = (a: Timeline, b: Timeline) => a.order - b.order;
+
 const links = (p: Project) =>
   [p.repo && `repo: ${p.repo}`, p.demo && `demo: ${p.demo}`].filter(Boolean).join(' · ');
 
@@ -81,7 +88,26 @@ export function buildLlmsTxt(projects: Project[], options: ContentOptions = {}):
   ].join('\n');
 }
 
-export function buildLlmsFullTxt(projects: Project[], options: ContentOptions = {}): string {
+// Mirrors src/components/Timeline.astro: same heading, same order, and the
+// same rule that an empty collection renders nothing at all rather than a bare
+// heading (spec §13). The markdown twins must not drift from the page they
+// stand in for (spec §11), so both builders share this.
+function timelineSection(timeline: Timeline[]): string[] {
+  if (timeline.length === 0) return [];
+  timeline = [...timeline].sort(byRecency);
+  return [
+    "## Where I've been",
+    '',
+    ...timeline.map((t) => `- **${t.when}** — ${t.role}. ${t.note}`),
+    '',
+  ];
+}
+
+export function buildLlmsFullTxt(
+  projects: Project[],
+  timeline: Timeline[] = [],
+  options: ContentOptions = {},
+): string {
   const { hasResume = false } = options;
   projects = [...projects].sort(featuredFirst);
   return [
@@ -98,6 +124,7 @@ export function buildLlmsFullTxt(projects: Project[], options: ContentOptions = 
     '## About',
     '',
     ...ABOUT_PARAGRAPHS.flatMap((p) => [p, '']),
+    ...timelineSection(timeline),
     '## Projects',
     '',
     ...projects.flatMap((p) => [
@@ -157,12 +184,16 @@ export function buildHomeMarkdown(projects: Project[], _options: ContentOptions 
   ].join('\n');
 }
 
-export function buildAboutMarkdown(options: ContentOptions = {}): string {
+export function buildAboutMarkdown(
+  timeline: Timeline[] = [],
+  options: ContentOptions = {},
+): string {
   const { hasResume = false } = options;
   return [
     '# A short honest version',
     '',
     ...ABOUT_PARAGRAPHS.flatMap((p) => [p, '']),
+    ...timelineSection(timeline),
     '## Contact',
     '',
     `Email ${CONTACT.email}${hasResume ? ` · Résumé ${SITE}${RESUME_PATH}` : ''}`,

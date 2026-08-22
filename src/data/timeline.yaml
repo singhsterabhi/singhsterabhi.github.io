@@ -1,1 +1,65 @@
-[]
+# Sourced from the user's own LinkedIn profile export (Downloads/Profile.pdf,
+# 2026-08-22). Dates and titles are verbatim from that export. The `note` lines
+# are editorial — only the IIT Madras and B.Tech entries had descriptions in the
+# export; the rest are written from title, tenure and stack, and are the user's
+# to correct.
+#
+# Deliberately omitted from the export, as noise on a senior engineer's page:
+# a 2016-17 college-era robotics advisory role, a 2015 cloud/DBMS workshop, and
+# schooling before the degree.
+
+- id: medianet-lead
+  order: 0
+  when: Jan 2026 — now
+  role: Module Lead · Media.net
+  note: >-
+    Stepped up to lead the module I'd spent the previous three years building.
+
+- id: medianet-senior
+  order: 1
+  when: Oct 2022 — Jan 2026
+  role: Senior Web Application Developer · Media.net
+  note: >-
+    Three and a half years of React and Python on ad-tech web applications, at
+    the kind of traffic volumes where latency budgets are a daily conversation.
+
+- id: radarr-senior
+  order: 2
+  when: Jan 2021 — Sep 2022
+  role: Senior Software Engineer · Radarr
+  note: >-
+    The second half of three years at Radarr, by then owning features end to
+    end rather than picking up tickets.
+
+- id: radarr-swe
+  order: 3
+  when: Sep 2019 — Dec 2020
+  role: Software Engineer · Radarr
+  note: >-
+    First proper product engineering job. Small team, JavaScript front to back,
+    and the steepest learning curve I've had.
+
+- id: wipro
+  order: 4
+  when: Aug 2018 — Sep 2019
+  role: Project Engineer · Wipro
+  note: >-
+    Straight out of an electrical engineering degree into enterprise IT in
+    Hyderabad — the year I decided software was the actual plan.
+
+- id: iitm-intern
+  order: 5
+  when: Jun — Jul 2017
+  role: R&D Intern · IIT Madras
+  note: >-
+    Two months at the Centre for Non-Destructive Evaluation on image dehazing
+    and enhancement algorithms and segmentation techniques, plus a GUI for the
+    image-processing tooling around them.
+
+- id: btech
+  order: 6
+  when: 2014 — 2018
+  role: B.Tech, Electrical Engineering · JSS Academy, Noida
+  note: >-
+    Studied circuits and power systems, spent the spare hours on Free Code Camp,
+    and shipped my way into software instead.

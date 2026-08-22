@@ -14,6 +14,10 @@ export const projectSchema = z.object({
 });
 
 export const timelineSchema = z.object({
+  // Astro's file() loader returns entries sorted by `id`, NOT in file order, so
+  // the YAML's sequence carries no meaning downstream. Recency is the point of
+  // a timeline, so it gets an explicit ordinal: 0 is the most recent entry.
+  order: z.number().int().nonnegative(),
   when: z.string().min(1),
   role: z.string().min(1),
   note: z.string().min(1).refine((s) => !PLACEHOLDER.test(s), {

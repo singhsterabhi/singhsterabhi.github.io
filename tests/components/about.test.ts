@@ -10,7 +10,7 @@ const render = async (entries: object[]) => {
 describe('Timeline', () => {
   it('renders nothing at all when there are no entries — no empty heading (§13)', async () => {
     const html = (await render([])).trim();
-    expect(html).not.toContain("Where I've worked");
+    expect(html).not.toContain("Where I've been");
     expect(html).not.toContain('<ol');
   });
 
@@ -18,7 +18,7 @@ describe('Timeline', () => {
     const html = await render([
       { when: '2022 → now', role: 'Software Engineer · media.net', note: 'Cut p99 to 380ms.' },
     ]);
-    expect(html).toContain("Where I've worked");
+    expect(html).toContain("Where I've been");
     expect(html).toContain('media.net');
     expect(html).toContain('380ms');
   });

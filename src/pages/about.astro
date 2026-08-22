@@ -6,9 +6,9 @@ import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import Timeline from '../components/Timeline.astro';
 import Terminal from '../islands/Terminal';
-import { ABOUT_PARAGRAPHS, CONTACT, RESUME_PATH } from '../lib/site-content';
+import { ABOUT_PARAGRAPHS, byRecency, CONTACT, RESUME_PATH } from '../lib/site-content';
 
-const entries = (await getCollection('timeline')).map((e) => e.data);
+const entries = (await getCollection('timeline')).map((e) => e.data).sort(byRecency);
 const projects = (await getCollection('projects')).map((e) => e.data);
 const site = Astro.site!.href;
 const canonical = site + 'about';
