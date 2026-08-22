@@ -34,18 +34,33 @@ export interface Rain {
   setTheme(theme: Theme): void;
   /** Flip the reduced-motion behaviour at runtime (the motion toggle). */
   setReducedMotion(reduced: boolean): void;
+  /** Current x position of every column's lane centre — exposed for testing
+   *  full-width coverage (bug: columns used to bunch against the left edge). */
+  columnXs(): number[];
 }
 
 const GLYPHS = '01<>/{}[]#$_—❯abcdef'.split('');
-const CELL = 16; // px per glyph cell, also the column pitch
+// GLYPH_CELL is the glyph's own vertical metric: font size and line height
+// (the fall step between stacked characters in a column). It is NOT the
+// horizontal column pitch — that is derived per-width below so the capped
+// column count always spans the full canvas instead of bunching at the left
+// edge (the bug: 52 columns * a fixed 16px pitch = 832px on a 1440px canvas).
+const GLYPH_CELL = 16;
 
 /** Non-negotiable 4: mobile gets fewer columns and a lower frame budget.
  *  Scales with viewport width, capped at 26 columns at/around 375px, and
  *  never returns zero so the field is never empty on a narrow screen. */
 export function columnCount(width: number): number {
-  const raw = Math.floor(width / CELL);
+  const raw = Math.floor(width / GLYPH_CELL);
   const capped = Math.min(raw, 26 + Math.floor(Math.max(0, width - 375) / 40));
   return Math.max(1, Math.min(raw, capped));
+}
+
+/** Horizontal lane pitch: spread the (possibly capped) column count evenly
+ *  across the full width, rather than packing columns at a fixed pitch that
+ *  only fills part of the canvas when the count is capped. */
+function columnPitch(width: number, cols: number): number {
+  return width / cols;
 }
 
 function readColor(name: string, fallback: string): string {
@@ -101,7 +116,10 @@ export function createRain(canvas: HTMLCanvasElement, opts: RainOptions): Rain {
   let dpr = Math.min(typeof devicePixelRatio === 'number' ? devicePixelRatio : 1, 2);
 
   let cols = columnCount(width);
-  let columns: Column[] = Array.from({ length: cols }, (_, i) => makeColumn(i * CELL, height));
+  let pitch = columnPitch(width, cols);
+  let columns: Column[] = Array.from({ length: cols }, (_, i) =>
+    makeColumn(Math.round(i * pitch + pitch / 2), height)
+  );
 
   let head = readColor('--color-accent-2', '#e070c0');
   let tail = readColor('--color-accent', '#3ad1e0');
@@ -121,13 +139,13 @@ export function createRain(canvas: HTMLCanvasElement, opts: RainOptions): Rain {
     ctx.clearRect(0, 0, width, height);
 
     const alpha = maxAlphaFor(theme);
-    ctx.font = `${CELL - 2}px var(--font-mono, ui-monospace, monospace)`;
+    ctx.font = `${GLYPH_CELL - 2}px var(--font-mono, ui-monospace, monospace)`;
     ctx.textBaseline = 'top';
 
     for (const col of columns) {
       for (let i = 0; i < col.glyphs.length; i++) {
-        const gy = col.y - i * CELL;
-        if (gy < -CELL || gy > height) continue;
+        const gy = col.y - i * GLYPH_CELL;
+        if (gy < -GLYPH_CELL || gy > height) continue;
         const isHead = i === 0;
         const fade = 1 - i / col.glyphs.length;
         ctx.globalAlpha = alpha * (isHead ? 1 : 0.55 * fade);
@@ -142,7 +160,7 @@ export function createRain(canvas: HTMLCanvasElement, opts: RainOptions): Rain {
   function tick() {
     for (const col of columns) {
       col.y += col.speed;
-      if (col.y - col.length * CELL > height) {
+      if (col.y - col.length * GLYPH_CELL > height) {
         col.y = Math.random() * -height * 0.2;
         col.speed = 0.4 + Math.random() * 1.1;
       }
@@ -175,13 +193,19 @@ export function createRain(canvas: HTMLCanvasElement, opts: RainOptions): Rain {
     maxAlpha() {
       return maxAlphaFor(theme);
     },
+    columnXs() {
+      return columns.map((c) => c.x);
+    },
     resize(w: number, h: number) {
       width = w;
       height = h;
       dpr = Math.min(typeof devicePixelRatio === 'number' ? devicePixelRatio : 1, 2);
       applyCanvasSize();
       cols = columnCount(width);
-      columns = Array.from({ length: cols }, (_, i) => makeColumn(i * CELL, height));
+      pitch = columnPitch(width, cols);
+      columns = Array.from({ length: cols }, (_, i) =>
+        makeColumn(Math.round(i * pitch + pitch / 2), height)
+      );
       if (!running) drawFrame();
     },
     setTheme(t: Theme) {
