@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it } from 'vitest';
 import Base from '../../src/layouts/Base.astro';
@@ -68,6 +69,24 @@ describe('Base layout', () => {
     });
     expect(html).toContain('href="https://singhsterabhi.pages.dev/about.md"');
     expect(html).not.toContain('/about/index.md');
+  });
+
+  // A <link rel=icon> pointing at a file that is not in public/ ships a broken
+  // favicon and nothing else notices — the page still renders, the build still
+  // passes. So the link and the file are asserted together.
+  it('declares a favicon, and every icon it points at actually exists', async () => {
+    const head = (await render()).split('</head>')[0];
+    const hrefs = [...head.matchAll(/<link[^>]+rel="(?:icon|apple-touch-icon)"[^>]*>/g)]
+      .map((m) => m[0].match(/href="([^"]+)"/)?.[1]);
+    expect(hrefs.length, 'no icon link in <head>').toBeGreaterThan(0);
+    for (const href of hrefs) {
+      expect(href, 'icon link without an href').toBeTruthy();
+      expect(existsSync(`public${href}`), `${href} is linked but missing from public/`).toBe(true);
+    }
+  });
+
+  it('ships an apple-touch-icon, so an iOS home-screen bookmark is not a blank tile', async () => {
+    expect(await render()).toMatch(/rel="apple-touch-icon"/);
   });
 
   it('offers a skip link as the first focusable element', async () => {

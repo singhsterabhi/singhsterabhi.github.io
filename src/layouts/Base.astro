@@ -50,6 +50,15 @@ const { title, description, canonical, markdownUrl, jsonLd } = Astro.props;
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <link rel="sitemap" href="/sitemap-index.xml" />
+    <!-- The wordmark's own `a.` — rasterised from real JetBrains Mono, not an
+         SVG <text>: a favicon renders without the page's webfonts, so an SVG
+         mark would fall back to whatever mono the visitor's OS happens to have
+         and stop being this letterform. Sizes are declared so the browser picks
+         rather than downscaling one bitmap. -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <!-- Agent-facing alternates (§11) -->
     <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
     {markdownUrl && <link rel="alternate" type="text/markdown" href={markdownUrl} />}
