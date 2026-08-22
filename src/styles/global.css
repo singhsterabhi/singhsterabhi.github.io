@@ -32,6 +32,17 @@ h1, h2, h3, h4, h5, h6 {
   margin: 0;
 }
 
+/* A native <button> computes cursor: default, and Tailwind's preflight does not
+   change it — so every control on the page said "not clickable" on hover while
+   every <a> said the opposite. Set site-wide rather than per component: a
+   global rule cannot be forgotten on the next button added. */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+summary { cursor: pointer; }
+
+button:disabled,
+[aria-disabled="true"] { cursor: not-allowed; }
+
 :focus { outline: none; }
 :focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
 ::selection { background: color-mix(in oklch, var(--color-accent) 30%, transparent); }

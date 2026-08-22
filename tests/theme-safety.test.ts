@@ -10,6 +10,28 @@ const walk = (dir: string): string[] =>
 
 const sources = walk('src').filter((f) => /\.(astro|tsx|ts|css)$/.test(f));
 
+describe('interactive affordances', () => {
+  // Comments stripped first: a /* … */ before a rule is captured as part of the
+  // selector otherwise, and this file's own explanatory comment mentions
+  // `button`. Same fix tests/tokens.test.ts already applies.
+  const global = readFileSync('src/styles/global.css', 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+
+  // A native <button> computes cursor: default and Tailwind's preflight leaves
+  // it alone, so all five controls on the page read as non-interactive on hover
+  // while every <a> read as a link. Asserted on the global rule rather than per
+  // component, because that is where the fix has to live to stay true.
+  it('gives enabled buttons a pointer cursor site-wide', () => {
+    const rule = global.match(/([^{}]*\bbutton\b[^{}]*)\{([^}]*cursor:\s*pointer[^}]*)\}/);
+    expect(rule, 'no global rule sets cursor: pointer for button').not.toBeNull();
+    // Bare `button`, not `.some-class button` — the rule must reach every button.
+    expect(rule![1]).toMatch(/(^|,)\s*button(:not\([^)]*\))?\s*(,|$)/);
+  });
+
+  it('marks disabled controls not-allowed rather than clickable', () => {
+    expect(global).toMatch(/button:disabled[^{]*\{[^}]*cursor:\s*not-allowed/);
+  });
+});
+
 describe('theme safety — a colour must resolve sensibly in BOTH themes', () => {
   // The bug this catches: `color-mix(in oklch, var(--color-bg) 84%, black)`
   // reads as a subtly recessed panel on a dark ground and as a mid-grey slab on
