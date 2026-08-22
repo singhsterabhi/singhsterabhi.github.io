@@ -6,6 +6,8 @@
   --color-surface: var(--color-surface);
   --color-text: var(--color-text);
   --color-accent: var(--color-accent);
+  --color-panel: var(--color-panel);
+  --color-scrim: var(--color-scrim);
   --font-body: var(--font-body);
   --font-heading: var(--font-heading);
   --font-mono: var(--font-mono);

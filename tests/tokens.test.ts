@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { wcagContrast, parse } from 'culori';
+import { wcagContrast, parse, oklch } from 'culori';
 
 const css = readFileSync('src/styles/tokens.css', 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
 
@@ -15,6 +15,10 @@ function block(selector: string): Record<string, string> {
   }
   return out;
 }
+
+// culori's parse() returns a union of colour spaces; oklch() narrows it so .l
+// is actually typed.
+const L = (v: string) => oklch(parse(v))!.l;
 
 const light = block(':root');
 const dark = block('[data-theme="dark"]');
@@ -68,6 +72,41 @@ describe('design tokens', () => {
     for (const [name, theme] of [['light', light], ['dark', dark]] as const) {
       const c = wcagContrast(parse(theme['--color-accent-2-300'])!, parse(theme['--color-bg'])!);
       expect(c, `${name} accent-2-300 contrast ${c}`).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
+  // The bug this catches: light mode shipped with --color-surface DARKER than
+  // --color-bg, so every elevated component (cards, chips, the featured panel)
+  // rendered as a recessed grey dent on a near-white page instead of lifting
+  // off it. Contrast tests could not see it — both values were legible, and
+  // legible is not the same as correctly ordered.
+  it('elevates surface above the ground in BOTH themes', () => {
+    for (const [name, theme] of [['light', light], ['dark', dark]] as const) {
+      const bg = L(theme['--color-bg']);
+      const surface = L(theme['--color-surface']);
+      expect(surface, `${name}: surface ${surface} must be lighter than bg ${bg}`)
+        .toBeGreaterThan(bg);
+    }
+  });
+
+  it('keeps borders far enough off the ground to read as edges', () => {
+    // --color-neutral-900 is the faintest border step and carries the project
+    // card outlines. Below ~0.04 of lightness separation it disappears and the
+    // page reads as fog — the "washed out" report.
+    for (const [name, theme] of [['light', light], ['dark', dark]] as const) {
+      const delta = Math.abs(L(theme['--color-neutral-900']) - L(theme['--color-bg']));
+      expect(delta, `${name}: neutral-900 is only ${delta.toFixed(3)} off the ground`)
+        .toBeGreaterThanOrEqual(0.04);
+    }
+  });
+
+  // Text on a FILL, not on the ground. The ground-contrast tests above all
+  // passed while the project-card tag chips sat at 4.085:1 in light mode,
+  // because nothing checked a token pair that never touches --color-bg.
+  it('meets WCAG AA for tag text on the neutral-900 chip fill', () => {
+    for (const [name, theme] of [['light', light], ['dark', dark]] as const) {
+      const c = wcagContrast(parse(theme['--color-neutral-400'])!, parse(theme['--color-neutral-900'])!);
+      expect(c, `${name} tag-on-chip contrast ${c}`).toBeGreaterThanOrEqual(4.5);
     }
   });
 

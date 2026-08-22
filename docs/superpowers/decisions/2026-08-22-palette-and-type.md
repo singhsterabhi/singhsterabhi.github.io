@@ -224,3 +224,120 @@ Non-negotiables carried into implementation:
   Space Grotesk / Instrument Serif candidate list.
 - The three muted palettes offered in the first Task 2 round, all rejected as "too
   muted, too safe".
+
+## Revision 2026-08-22 — accent moved to azure, light mode rebuilt on a paper ground
+
+Two rounds of user feedback on the rendered site, both acted on. **The values in
+this section supersede the dark `--color-accent*` ramp and the entire light theme
+below.** Everything else in this document still stands.
+
+### 1. The accent was pale mint, not a signal
+
+`oklch(0.815 0.150 195)` sat close to the blue-violet ground in temperature and
+at L 0.815 read as pastel. The user's words were that the dark background is good
+but the accent is bad. Four candidates were rendered on the real page — the
+current cyan, amber (hue 75), azure (hue 245) and a saturated teal (hue 200) —
+and the user chose **azure**, knowing it is the more conservative of the two real
+departures.
+
+```
+dark   --color-accent: oklch(0.700 0.185 245)
+light  --color-accent: oklch(0.480 0.180 248)
+```
+
+Dark ramp (lightness descends): `100 oklch(0.945 0.045 245)` · `200 oklch(0.880
+0.090 246)` · `300 oklch(0.775 0.155 248)` · `400 oklch(0.700 0.185 245)` ·
+`500 oklch(0.640 0.180 247)` · `600 oklch(0.565 0.160 249)` · `700 oklch(0.480
+0.135 250)` · `800 oklch(0.395 0.100 250)` · `900 oklch(0.300 0.070 252)`
+
+Light ramp (lightness ascends): `100 oklch(0.250 0.105 255)` · `200 oklch(0.325
+0.140 252)` · `300 oklch(0.420 0.170 250)` · `400 oklch(0.480 0.180 248)` ·
+`500 oklch(0.550 0.170 247)` · `600 oklch(0.630 0.150 246)` · `700 oklch(0.730
+0.110 245)` · `800 oklch(0.820 0.075 245)` · `900 oklch(0.900 0.045 245)`
+
+Magenta `--color-accent-2` is unchanged and keeps its role: the live caret, the
+active state, errors. Azure and magenta are further apart than cyan and magenta
+were, so the division of labour reads more clearly, not less.
+
+`src/scripts/rain.ts` reads both accents from the computed tokens at runtime, so
+the living background followed automatically. Only its hardcoded fallback moved
+(`#3ad1e0` → `#4b8ff5`), for the case where the token lookup fails.
+
+### 2. Light mode was washed out because its elevation was inverted
+
+The user reported light mode as "really bad in some places… kinda washed out".
+The cause was structural, not a matter of taste:
+
+`--color-surface` (0.940) was **darker** than `--color-bg` (0.975). Every
+elevated component — project cards, chips, the featured panel — therefore
+rendered as a recessed grey dent on a near-white page instead of lifting off it,
+and at ΔL 0.022 from the ground it barely rendered at all. The border ramp had
+the same problem: `neutral-900` sat 0.045 off the ground, which is not an edge.
+
+Light mode now uses a **paper ground with white panels**, the standard light
+elevation model:
+
+```
+--color-bg:      oklch(0.962 0.006 250)   /* cool paper, was 0.975 */
+--color-surface: oklch(0.995 0.003 250)   /* now LIGHTER than bg, was 0.940 */
+--color-panel:   oklch(1 0 250)
+
+--color-neutral-600: oklch(0.532 0.012 252)  /* was 0.545 — holds AA on the
+                                                darker ground */
+--color-neutral-700: oklch(0.660 0.010 250)  /* was 0.700 */
+--color-neutral-800: oklch(0.820 0.008 250)  /* was 0.855 */
+--color-neutral-900: oklch(0.900 0.006 250)  /* was 0.930 — now a real edge */
+```
+
+Darkening the ground cost `neutral-600` its margin (4.606 → 4.435, below AA), so
+the token moved rather than the assertion — the rule this document already sets.
+Darkening `neutral-900` then cost the project-card tag chips their margin, since
+that token is both the faintest border and the chip fill; the chip text moved
+from `neutral-500` to `neutral-400` (4.085 → 5.401).
+
+### 3. Two new tokens: `--color-panel` and `--color-scrim`
+
+Three components built their panel fill as `color-mix(in oklch, var(--color-bg)
+84%, black)` and the modal scrim as the same mix at 72%. Darkening toward black
+is a **dark-theme idiom**: on the near-white light ground it produced an opaque
+mid-grey slab at L 0.819 for the terminal hint strip and dialog, and an opaque
+L 0.702 wall for the backdrop that hid the page entirely. Whether an elevated
+plane goes lighter or darker than its ground is exactly the thing that flips
+between themes, so it belongs in a token.
+
+```
+dark   --color-panel: oklch(0.130 0.025 265)   /* a recessed console well */
+       --color-scrim: color-mix(in oklch, oklch(0.090 0.020 265) 82%, transparent)
+light  --color-panel: oklch(1 0 250)           /* white, above the paper */
+       --color-scrim: color-mix(in oklch, oklch(0.28 0.020 260) 38%, transparent)
+```
+
+The scrim is translucent in **both** themes so the blurred page still reads
+behind the dialog. The dark panel value reproduces what the old mix computed, so
+dark mode is pixel-identical to before.
+
+### Verified contrast, both themes
+
+| Pairing | Light | Dark | Min |
+|---|---|---|---|
+| `text` on `bg` | 16.230 | 16.965 | 4.5 |
+| `neutral-400` on `bg` | 6.519 | 7.900 | 4.5 |
+| `neutral-600` on `bg` | 4.685 | 4.964 | 4.5 |
+| `accent` on `bg` | 5.899 | 7.390 | 3 |
+| `accent-300` on `bg` | 7.685 | 9.675 | 4.5 |
+| `accent-2-300` on `bg` | 7.691 | 9.093 | 4.5 |
+| `neutral-400` on `neutral-900` (tag chip) | 5.401 | 6.855 | 4.5 |
+
+### Invariants added, because the tests could not see any of this
+
+Every contrast assertion passed throughout. They compared tokens against
+`--color-bg` and never asked whether the ordering made sense, so three separate
+defects were invisible to a green suite:
+
+- **`tests/tokens.test.ts`** now asserts `surface` is lighter than `bg` in both
+  themes (the inverted elevation), that `neutral-900` sits at least 0.04 off the
+  ground (borders that read as edges), and the tag-chip pairing (text on a fill
+  that never touches `bg`).
+- **`tests/theme-safety.test.ts`** is new: no source file may mix a theme token
+  toward a literal `black` or `white`, every panel/scrim token must be defined in
+  all three theme blocks, and the scrim must stay translucent.

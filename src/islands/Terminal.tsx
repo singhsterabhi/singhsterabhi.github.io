@@ -121,7 +121,7 @@ export default function Terminal({
       ref={dialogRef}
       aria-label="Terminal"
       onClose={() => { /* native Esc lands here; nothing to undo */ }}
-      className="m-0 max-h-[72vh] w-full max-w-[760px] overflow-hidden rounded-xl border border-[var(--color-neutral-700)] bg-[color-mix(in_oklch,var(--color-bg)_84%,black)] p-0 backdrop:bg-[color-mix(in_oklch,var(--color-bg)_72%,black)] backdrop:backdrop-blur-sm"
+      className="m-0 max-h-[72vh] w-full max-w-[760px] overflow-hidden rounded-xl border border-[var(--color-neutral-700)] bg-[var(--color-panel)] p-0 backdrop:bg-[var(--color-scrim)] backdrop:backdrop-blur-sm"
       style={{ marginTop: '8vh', marginInline: 'auto' }}
     >
       <div className="flex flex-col max-h-[72vh]">
